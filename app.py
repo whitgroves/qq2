@@ -4,6 +4,14 @@ import datetime
 
 app = Flask(__name__)
 
+@app.errorhandler(404)
+def page_not_found(error):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def internal_error(error):
+    return render_template('500.html'), 500
+
 @app.route('/')
 @app.route('/index/')
 def hello():
@@ -38,3 +46,18 @@ def comments():
         "What? You're still here? Go home, the movie's over!",
     ]
     return render_template('comments.html', comments=comments)
+
+@app.route('/messages/<int:idx>/')
+def message(idx):
+    app.logger.info('Building messages list...')
+    messages = [f'Message {n}' for n in range(10)]
+    try:
+        app.logger.debug(f'Fetching message at index: {idx}')
+        return render_template('message.html', message=messages[idx])
+    except IndexError:
+        app.logger.error(f'No message found at index: {idx}')
+        abort(404)
+
+@app.route('/500/')
+def error500():
+    abort(500)
