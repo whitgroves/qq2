@@ -1,16 +1,17 @@
-from flask import Flask, abort
+from flask import Flask, abort, render_template
 from markupsafe import escape # renders URL variable as text to prevent XSS attacks
+import datetime
 
 app = Flask(__name__)
 
 @app.route('/')
 @app.route('/index/')
 def hello():
-    return '<h1>Hello World</h1>'
+    return render_template('index.html', utc_dt=datetime.datetime.utcnow())
 
 @app.route('/about/')
 def about():
-    return '<h3>A Flask webapp.</h3>'
+    return render_template('about.html')
 
 @app.route('/capitalize/<word>/')
 def capitalize(word):
@@ -27,3 +28,13 @@ def greet_user(user_id):
         return f'<h2>Howdy, {users[user_id]}!</h2>'
     except IndexError:
         abort(404)
+
+@app.route('/comments/')
+def comments():
+    comments = [
+        'This is the first comment',
+        'This is the second comment',
+        'This is comment the third (no relation)',
+        "What? You're still here? Go home, the movie's over!",
+    ]
+    return render_template('comments.html', comments=comments)
