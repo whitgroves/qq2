@@ -3,5 +3,16 @@
 {% block content %}
     <h1>{% block title %} 🏠 {% endblock %} Hello World!</h1>
     <h2>Welcome to qqueue.</h2>
+    <hr>
+    <h2>Latest Messages</h2>
+    {% for message in messages %}
+        <div class="card" style="margin: 8px 0px">
+            <div class="card-body">
+                <h3>{{ message['title'] }}</h3>
+                <p>{{ message['content'] }}</p>
+            </div>
+        </div>
+    {% endfor %}
+    <hr>
     <h3>The current time (UTC) is {{ utc_dt }}.</h3>
 {% endblock %}
