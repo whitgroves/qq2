@@ -1,11 +1,20 @@
 from flask import Flask, abort, render_template, request, url_for, flash, redirect
 from markupsafe import escape # renders URL variable as text to prevent XSS attacks
-import datetime
+from datetime import datetime
+from forms import CourseForm
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '0b6f5b665fbc26e72c6cffb7de43022196d437ad94b1e8a2' # os.urandom(24).hex()
 
 messages = [{'title': f'Message {i}', 'content': f'Message {i} content'} for i in range(3)]
+
+course_list = [{
+    'title': 'Python 101',
+    'description': 'Learn the basics of Python',
+    'price': 55,
+    'available': True,
+    'level': 'Beginner'
+}]
 
 @app.errorhandler(404)
 def page_not_found(error):
@@ -15,10 +24,20 @@ def page_not_found(error):
 def internal_error(error):
     return render_template('500.html'), 500
 
-@app.route('/')
+@app.route('/', methods=('GET', 'POST'))
 @app.route('/index/')
 def hello():
-    return render_template('index.html', messages=messages, utc_dt=datetime.datetime.utcnow())
+    form = CourseForm()
+    if form.validate_on_submit():
+        course_list.append({
+            'title': form.title.data,
+            'description': form.description.data,
+            'price': form.price.data,
+            'level': form.level.data,
+            'available': form.available.data,
+        })
+        return redirect(url_for('courses'))
+    return render_template('index.html', form=form, messages=messages, utc_dt=datetime.utcnow())
 
 @app.route('/about/')
 def about():
@@ -77,5 +96,8 @@ def create():
         else:
             messages.append({'title': title, 'content': content})
             return redirect(url_for('hello'))
-            
     return render_template('create.html')
+
+@app.route('/courses/')
+def courses():
+    return render_template('courses.html', course_list=course_list)
