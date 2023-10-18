@@ -1,0 +1,10 @@
+DROP TABLE IF EXISTS books;
+
+CREATE TABLE books (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR (150) NOT NULL,
+    author VARCHAR (50) NOT NULL,
+    pages_num INTEGER NOT NULL,
+    review TEXT,
+    date_added DATE DEFAULT CURRENT_TIMESTAMP
+);

@@ -3,15 +3,17 @@
 {% block content %}
     <h1>{% block title %} 🏠 {% endblock %} Welcome Home</h1>
     <hr>
-    <h2>Top Posts</h2>
-    {% for post in posts %}
+    <h2>Top Reviews</h2>
+    {% for book in books %}
         <div class="card" style="margin: 8px 0px">
             <div class="card-body">
-                <h3>{{ post['title'] }}</h3>
-                <p><i>{{ post['created'] }} UTC</i></p>
+                <h3>{{ book[1] }}</h3>
+                <h4><i>by {{ book[2] }}</i></h4>
+                <p><i>{{ book[3] }} pages</i></p>
                 <hr>
-                <p>{{ post['content'] }}</p>
-                <a href="{{ url_for('edit', id=post['id']) }}">Edit</a>
+                <p><i>{{ book[5] }} UTC</i></p>
+                <p>{{ book[4] }}</p>
+                {# <a href="{{ url_for('edit', id=post['id']) }}">Edit</a> #}
             </div>
         </div>
     {% endfor %}
