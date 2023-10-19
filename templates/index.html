@@ -3,6 +3,43 @@
 {% block content %}
     <h1>{% block title %} 🏠 {% endblock %} Welcome Home</h1>
     <hr>
+    <h2>All Tasks</h2>
+    {% for task in tasks %}
+        <div class="card" style="margin: 8px 0px">
+            <div class="card-body">
+                <p>{{ task['description'] }} <em>({{ task['importance'] }})</em></p>
+                <form method="POST" action="{{ url_for('delete', id=task['_id']) }}">
+                    <input type="submit" value="Clear"
+                        onclick="return confirm('Delete this task forever?')">
+                </form>
+            </div>
+        </div>
+    {% endfor %}
+    <hr>
+    <h2>Add New Task</h2>
+    <form method="post">
+        <p>
+            <label for="description">Task Description</label>
+        </p>
+        <p>
+            <input type="text" name="description"
+                   placeholder="What needs to be done?">
+        </p>
+        <p>
+            <label for="importance">Task Importance</label>
+        </p>
+        <p>
+            <input id="degree-0" name="importance" required type="radio" value="Important">
+            <label for="degree-0">Important</label>
+        </p>
+        <p>
+            <input id="degree-1" name="importance" required type="radio" value="Unimportant">
+            <label for="degree-1">Unimportant</label>
+        </p>
+        <br>
+        <button type="submit">Add Task</button>
+    </form>
+    {# <hr>
     <h2>Top Reviews</h2>
     {% for book in books %}
         <div class="card" style="margin: 8px 0px">
@@ -13,10 +50,9 @@
                 <hr>
                 <p><i>{{ book[5] }} UTC</i></p>
                 <p>{{ book[4] }}</p>
-                {# <a href="{{ url_for('edit', id=post['id']) }}">Edit</a> #}
             </div>
         </div>
-    {% endfor %}
+    {% endfor %} #}
     <hr>
     <h3>The current time is {{ utc_dt }} UTC</h3>
 {% endblock %}
