@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} 📝 {% endblock %} Post #{{ post.id }}</h1>
+    <hr>
+    <h3>{{ post.title }}</h3>
+    <p><i>{{ post.created_at }}</i></p>
+    <h5 class="card-text">{{ post.content }}</h5>
+    <hr>
+    <h4>Comments</h4>
+    {% for comment in post.comments %}
+    <div class="card text-bg-light" style="margin: 8px 0px">
+        <div class="card-body">
+            <p class="card-text">{{ comment.content }}</p>
+        </div>
+        <div class="card-footer">
+            <p class="card-text"><i>{{ comment.created_at }}</i></p>
+        </div>
+    </div>
+    {% endfor %}
+    <hr>
+    <h4>Add Comment</h4>
+    <div class="card text-bg-light" style="margin: 8px 0px">
+        <form method="post">
+            <div class="card-body">
+                <textarea name="content" cols="60" rows="5"></textarea>
+            </div>
+            <div class="card-footer">
+                <button type="submit" class="btn btn-primary">Reply</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}

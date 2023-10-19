@@ -3,47 +3,26 @@
 {% block content %}
     <h1>{% block title %} 🏠 {% endblock %} Welcome Home</h1>
     <hr>
-    <h2>All Users</h2>
-    {% for user in users %}
-        <div class="card" style="margin: 8px 0px">
+    <h2>All Posts</h2>
+    {% for post in posts %}
+        <div class="card text-bg-light" style="margin: 8px 0px">
             <div class="card-body">
-                <p><b>User:</b> (#{{ user.id }}) <a href="{{ url_for('user', id=user.id) }}"
+                <h5 class="card-title">{{ post.title }}</h5>
+                <p class="card-text">{{ post.content }}</p>
+                <a href="{{ url_for('post', id=post.id) }}">View Details</a>
+                {# <p><b>User:</b> (#{{ user.id }}) <a href="{{ url_for('user', id=user.id) }}"
                                                  >{{ user.username }}</a
                                                  > <a href="{{ url_for('edit', id=user.id)}}">(edit)</a></p>
                 <p><b>Joined:</b> {{ user.created_at }}</p>
-                <p><b>Bio:</b> {{ user.bio }}</p>
-                {# <p>{{ user['description'] }} <em>({{ task['importance'] }})</em></p> #}
-                {# <form method="POST" action="{{ url_for('delete', id=task['_id']) }}">
-                    <input type="submit" value="Clear"
-                        onclick="return confirm('Delete this task forever?')">
-                </form> #}
+                <p><b>Bio:</b> {{ user.bio }}</p> #}
             </div>
+            {# <ul class="list-group list-group-flush">
+                {% for comment in post.comments %}
+                    <li class="list-group-item text-bg-light">{{ comment.content }}</li>
+                {% endfor %}
+            </ul> #}
         </div>
     {% endfor %}
-    {# <hr>
-    <h2>Add New Task</h2>
-    <form method="post">
-        <p>
-            <label for="description">Task Description</label>
-        </p>
-        <p>
-            <input type="text" name="description"
-                   placeholder="What needs to be done?">
-        </p>
-        <p>
-            <label for="importance">Task Importance</label>
-        </p>
-        <p>
-            <input id="degree-0" name="importance" required type="radio" value="Important">
-            <label for="degree-0">Important</label>
-        </p>
-        <p>
-            <input id="degree-1" name="importance" required type="radio" value="Unimportant">
-            <label for="degree-1">Unimportant</label>
-        </p>
-        <br>
-        <button type="submit">Add Task</button>
-    </form> #}
     <hr>
     <h3>The current time is {{ utc_dt }} UTC</h3>
 {% endblock %}
