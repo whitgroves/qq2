@@ -1,73 +1,99 @@
 from flask import Flask, abort, render_template, request, url_for, flash, redirect
 from datetime import datetime
-# import psycopg
-from pymongo import MongoClient
-from bson import ObjectId
+# from pymongo import MongoClient
+# from bson import ObjectId
+from os.path import abspath, dirname, join
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.sql import func
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '0b6f5b665fbc26e72c6cffb7de43022196d437ad94b1e8a2' # os.urandom(24).hex()
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + join(abspath(dirname(__file__)), 'qq2.db')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-client = MongoClient('localhost', 27017)
-db = client.qq2
-tasks = db.tasks
+db = SQLAlchemy(app)
 
-# def get_db_connection():
-#     conn = psycopg.connect(host='localhost', dbname='qq2',
-#                            user='app', password='qqueue')
-#     return conn
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(80), nullable=False, unique=True)
+    age = db.Column(db.Integer)
+    created_at = db.Column(db.DateTime(timezone=True), server_default=func.now()) # func.now() renders as CURRENT_TIMESTAMP at table creation
+    bio = db.Column(db.Text)
 
-@app.route('/', methods=('GET', 'POST'))
+    def __repr__(self):
+        return f'<User {self.username}>'
+#endclass
+
+@app.route('/')
 def index():
-    if request.method == 'POST':
-        description = request.form['description']
-        importance = request.form['importance']
-        tasks.insert_one({'description': description, 'importance': importance})
-        return redirect(url_for('index'))
-#     conn = get_db_connection()
-#     cur = conn.cursor()
-#     cur.execute('SELECT * FROM books')
-#     books = cur.fetchall()
-#     cur.close()
-#     conn.close()
-    all_tasks = tasks.find()
-    return render_template('index.html', tasks=all_tasks, utc_dt=datetime.utcnow())
+    users = User.query.all()
+    return render_template('index.html', users=users, utc_dt=datetime.utcnow())
 
-@app.errorhandler(404)
-def page_not_found(error):
-    app.logger.error(f'404 at {datetime.utcnow()}: {error}')
-    return render_template('404.html'), 404
+@app.route('/user/<int:id>/')
+def user(id):
+    user = User.query.get_or_404(id)
+    return render_template('user.html', user=user)
+
+def handle_user_update(form, user=None) -> tuple[bool, str]:
+    username = form['username']
+    email = form['email']
+    age = form['age']
+    bio = form['bio']
+    if any(len(x) == 0 for x in [username, email]):
+        return False, 'Username and email required'
+    try:
+        if user is not None:
+            user.username = username
+            user.email = email
+            user.age = age
+            user.bio = bio
+        else:
+            if len(User.query.filter_by(email=email).all()) > 0:
+                return False, 'Email must be unique'
+            user = User(username=username, email=email, age=age, bio=bio)
+        db.session.add(user)
+        db.session.commit()
+        return True, f'Successfully added user {username}'
+    except Exception as e:
+        app.logger.error(f'Error while writing to database: {e}')
+        return False, 'Something went wrong'
+
+@app.route('/user/create/', methods=('GET', 'POST'))
+def create():
+    if request.method == 'POST':
+        success, msg = handle_user_update(request.form)
+        if success:
+            return redirect(url_for('index'))
+        else: 
+            flash(msg)
+            return render_template('create.html', user=request.form)
+    return render_template('create.html')
+
+@app.route('/user/<int:id>/edit/', methods=('GET', 'POST'))
+def edit(id):
+    user = User.query.get_or_404(id)
+    if request.method == 'POST':
+        success, msg = handle_user_update(request.form, user)
+        if success:
+            return redirect(url_for('index'))
+        else: 
+            flash(msg)
+            return render_template('edit.html', user=user)
+    return render_template('edit.html', user=user)
+
+@app.post('/user/<int:id>/delete/')
+def delete(id):
+    user = User.query.get_or_404(id)
+    db.session.delete(user)
+    db.session.commit()
+    return redirect(url_for('index'))
 
 @app.route('/about/')
 def about():
     return render_template('about.html')
 
-# @app.route('/create/', methods=('GET', 'POST'))
-# def create():
-#     if request.method == 'POST':
-#         title = request.form['title']
-#         author = request.form['author']
-#         pages_num = request.form['pages_num']
-#         review = request.form['review']
-#         if not title:
-#             flash('Title required.')
-#         elif not author:
-#             flash('Author required.')
-#         elif not pages_num:
-#             flash('Number of pages required')
-#         elif not review:
-#             flash('Review required')
-#         else:
-#             conn = get_db_connection()
-#             cur = conn.cursor()
-#             cur.execute('INSERT INTO books (title, author, pages_num, review)\
-#                         VALUES (%s, %s, %s, %s)', (title, author, int(pages_num), review))
-#             conn.commit()
-#             cur.close()
-#             conn.close()
-#             return redirect(url_for('index'))
-#     return render_template('create.html')
-
-@app.post('/<id>/delete/')
-def delete(id):
-    tasks.delete_one({'_id': ObjectId(id)})
-    return redirect(url_for('index'))
+@app.errorhandler(404)
+def page_not_found(error):
+    app.logger.error(f'404 at {datetime.utcnow()}: {error}')
+    return render_template('404.html'), 404

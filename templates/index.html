@@ -3,19 +3,24 @@
 {% block content %}
     <h1>{% block title %} 🏠 {% endblock %} Welcome Home</h1>
     <hr>
-    <h2>All Tasks</h2>
-    {% for task in tasks %}
+    <h2>All Users</h2>
+    {% for user in users %}
         <div class="card" style="margin: 8px 0px">
             <div class="card-body">
-                <p>{{ task['description'] }} <em>({{ task['importance'] }})</em></p>
-                <form method="POST" action="{{ url_for('delete', id=task['_id']) }}">
+                <p><b>User:</b> (#{{ user.id }}) <a href="{{ url_for('user', id=user.id) }}"
+                                                 >{{ user.username }}</a
+                                                 > <a href="{{ url_for('edit', id=user.id)}}">(edit)</a></p>
+                <p><b>Joined:</b> {{ user.created_at }}</p>
+                <p><b>Bio:</b> {{ user.bio }}</p>
+                {# <p>{{ user['description'] }} <em>({{ task['importance'] }})</em></p> #}
+                {# <form method="POST" action="{{ url_for('delete', id=task['_id']) }}">
                     <input type="submit" value="Clear"
                         onclick="return confirm('Delete this task forever?')">
-                </form>
+                </form> #}
             </div>
         </div>
     {% endfor %}
-    <hr>
+    {# <hr>
     <h2>Add New Task</h2>
     <form method="post">
         <p>
@@ -38,21 +43,7 @@
         </p>
         <br>
         <button type="submit">Add Task</button>
-    </form>
-    {# <hr>
-    <h2>Top Reviews</h2>
-    {% for book in books %}
-        <div class="card" style="margin: 8px 0px">
-            <div class="card-body">
-                <h3>{{ book[1] }}</h3>
-                <h4><i>by {{ book[2] }}</i></h4>
-                <p><i>{{ book[3] }} pages</i></p>
-                <hr>
-                <p><i>{{ book[5] }} UTC</i></p>
-                <p>{{ book[4] }}</p>
-            </div>
-        </div>
-    {% endfor %} #}
+    </form> #}
     <hr>
     <h3>The current time is {{ utc_dt }} UTC</h3>
 {% endblock %}

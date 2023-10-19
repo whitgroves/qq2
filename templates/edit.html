@@ -1,36 +1,37 @@
 {% extends 'base.html' %}
 
 {% block content %}
-    <h1>{% block title %} New User {% endblock %}</h1>
+    <h1>{% block title %} Edit User {% endblock %}</h1>
     <form method="post">
         <p>
             <input type="text" name="username" required
-                   value="{{ user['username'] if user }}"
-                   placeholder="leeroy_jenkins">
+                   value="{{ user.username if user }}">
             <label for="username">Username</label>
         </p>
         <p>
             <input type="text" name="email" required
-                   value="{{ user['email'] if user }}"
-                   placeholder="email@example.com">
+                   value="{{ user.email if user }}">
             <label for="email">Email Address</label>
         </p>
         <p>
             <input type="number" name="age"
-                   value="{{ user['age'] if user }}"
-                   placeholder="24">
+                   value="{{ user.age if user }}">
             <label for="age">Age</label>
         </p>
         <p>
             <label for="bio">Bio</label>
             <br>
             <textarea name="bio"
-                      placeholder="Express yourself"
                       rows="15"
-                      cols="60">{{ user['bio'] if user }}</textarea>
+                      cols="60">{{ user.bio }}</textarea>
         </p>
         <p>
-            <button type="submit" class="btn btn-success">Add</button>
+            <button type="submit" class="btn btn-primary">Update</button>
         </p>
+    </form>
+    <hr>
+    <form method="post" action="{{ url_for('delete', id=user.id) }}">
+        <input type="submit" value="Delete" class="btn btn-danger"
+               onclick="return confirm('Delete user forever?')">
     </form>
 {% endblock %}
