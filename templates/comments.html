@@ -1,7 +1,8 @@
 {% extends 'base.html'%}
 
 {% block content %}
-    <h1>{% block title %} 💬 {% endblock %} Comments</h1>
+    <h1>{% block title %} 💬 {% endblock %} Latest Comments</h1>
+    <hr>
     {% for comment in comments %}
     <div class="card" style="margin: 8px 0px">
         <div class="card-header">

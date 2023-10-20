@@ -23,3 +23,27 @@
         </div>
     {% endfor %}
 {% endmacro %}
+
+{% macro display_users(users) %}
+    {% for user in users %}
+        <div class="card" style="margin: 8px 0px">
+            <div class="card-header">
+                <h5 class="card-title"><a href="{{ url_for('user', id=user.id) }}"
+                                        >{{ user.username }}</a></h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text"><b>Age:</b> {{ user.age }}</p>
+                <p class="card-text"><b>Bio:</b> 
+                    {% if user.bio and user.bio|length > 0 %}
+                        {{ user.bio }}
+                    {% else %}
+                        <i>None</i>
+                    {% endif %}
+                </p>
+            </div>
+            <div class="card-footer">
+                <p class="card-text"><b>Joined:</b> {{ user.created_at }}</p>
+            </div>
+        </div>
+    {% endfor %}
+{% endmacro %}

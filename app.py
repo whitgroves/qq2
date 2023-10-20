@@ -15,19 +15,20 @@ post_tag = db.Table('post_tag',
                     db.Column('post_id', db.Integer, db.ForeignKey('post.id')),
                     db.Column('tag_id', db.Integer, db.ForeignKey('tag.id')))
 
-# class User(db.Model):
-#     id = db.Column(db.Integer, primary_key=True)
-#     username = db.Column(db.String(100), nullable=False)
-#     email = db.Column(db.String(80), nullable=False, unique=True)
-#     age = db.Column(db.Integer)
-#     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now()) # func.now() renders as CURRENT_TIMESTAMP at table creation
-#     bio = db.Column(db.Text)
-#     # posts = db.relationship('Post', backref='user')
-#     # comments = db.relationship('Comment', backref='user')
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(80), nullable=False, unique=True)
+    age = db.Column(db.Integer)
+    bio = db.Column(db.Text)
+    created_at = db.Column(db.DateTime(timezone=True), server_default=func.now()) # func.now() renders as CURRENT_TIMESTAMP at table creation
+    active = db.Column(db.Boolean, nullable=False)
+    # posts = db.relationship('Post', backref='user')
+    # comments = db.relationship('Comment', backref='user')
 
-#     def __repr__(self):
-#         return f'<User {self.username}>'
-# #endclass
+    def __repr__(self):
+        return f'<User {self.username}{' (inactive)' if not self.active else ''}>'
+#endclass
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -38,7 +39,7 @@ class Post(db.Model):
     tags = db.relationship('Tag', secondary=post_tag, backref='posts')
 
     def __repr__(self):
-        return f'<Post {self.id}: {self.title}>'
+        return f'<Post {self.id}: "{self.title}">'
 #endclass
 
 class Tag(db.Model):
@@ -56,14 +57,82 @@ class Comment(db.Model):
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'))
 
     def __repr__(self):
-        return f'<Comment {self.id}: {self.content[:20]}>'
+        return f'<Comment {self.id}: "{self.content[:20]}{'...' if len(self.content) > 20 else ''}">'
 #endclass
 
 @app.route('/')
 def index():
-    # users = User.query.all()
-    posts = Post.query.all()
-    return render_template('index.html', posts=posts, utc_dt=datetime.utcnow())
+    return render_template('index.html', utc_dt=datetime.utcnow())
+
+@app.route('/users/')
+def users():
+    page = request.args.get('page', 1, type=int)
+    pagination = User.query.filter_by(active=True).order_by(User.id).paginate(page=page, per_page=4)
+    return render_template('users.html', pagination=pagination)
+
+@app.route('/user/<int:id>/')
+def user(id):
+    user = User.query.get_or_404(id)
+    return render_template('user.html', user=user)
+
+def handle_user_update(form, user=None) -> tuple[bool, str]: # result, msg
+    username = form['username']
+    email = form['email']
+    age = form['age']
+    bio = form['bio']
+    if any(len(x) == 0 for x in [username, email]):
+        return False, 'Username and email required'
+    try:
+        if user is not None:
+            user.username = username
+            user.email = email
+            user.age = age
+            user.bio = bio
+        else:
+            if len(User.query.filter_by(email=email).all()) > 0:
+                return False, 'Email must be unique'
+            user = User(username=username, email=email, age=age, bio=bio, active=True)
+        db.session.add(user)
+        db.session.commit()
+        return True, f'Updated record for user: {username}'
+    except Exception as e:
+        app.logger.error(f'Error while writing to database: {e}')
+        return False, 'Something went wrong'
+
+@app.route('/user/create/', methods=('GET', 'POST'))
+def create_user():
+    if request.method == 'POST':
+        success, msg = handle_user_update(request.form)
+        flash(msg)
+        if success:
+            return redirect(url_for('users'))
+        else: 
+            return render_template('create.html', user=request.form)
+    return render_template('create.html')
+
+@app.route('/user/<int:id>/edit/', methods=('GET', 'POST'))
+def edit_user(id):
+    user = User.query.get_or_404(id)
+    if request.method == 'POST':
+        success, msg = handle_user_update(request.form, user)
+        flash(msg)
+        if success:
+            return redirect(url_for('user', id=user.id))
+        else: 
+            return render_template('edit.html', user=user)
+    return render_template('edit.html', user=user)
+
+@app.post('/user/<int:id>/delete/')
+def delete_user(id):
+    user = User.query.get_or_404(id)
+    db.session.delete(user)
+    db.session.commit()
+    return redirect(url_for('users'))
+
+@app.route('/posts/')
+def posts():
+    posts = Post.query.order_by(Post.created_at.desc()).limit(3).all()
+    return render_template('posts.html', posts=posts)
 
 @app.route('/post/<int:id>/', methods=('GET', 'POST'))
 def post(id):
@@ -81,12 +150,13 @@ def post(id):
 
 @app.route('/comments/')
 def comments():
-    comments = Comment.query.order_by(Comment.id.desc()).all()
+    comments = Comment.query.order_by(Comment.created_at.desc()).limit(5).all()
     return render_template('comments.html', comments=comments)
 
 @app.post('/comments/<int:id>/delete/')
 def delete_comment(id):
     comment = Comment.query.get_or_404(id)
+    print(comment)
     post_id = comment.post.id
     db.session.delete(comment)
     db.session.commit()
@@ -96,65 +166,6 @@ def delete_comment(id):
 def tag(name):
     tag = Tag.query.filter_by(name=name).first_or_404()
     return render_template('tag.html', tag=tag)
-
-# @app.route('/user/<int:id>/')
-# def user(id):
-#     user = User.query.get_or_404(id)
-#     return render_template('user.html', user=user)
-
-# def handle_user_update(form, user=None) -> tuple[bool, str]:
-#     username = form['username']
-#     email = form['email']
-#     age = form['age']
-#     bio = form['bio']
-#     if any(len(x) == 0 for x in [username, email]):
-#         return False, 'Username and email required'
-#     try:
-#         if user is not None:
-#             user.username = username
-#             user.email = email
-#             user.age = age
-#             user.bio = bio
-#         else:
-#             if len(User.query.filter_by(email=email).all()) > 0:
-#                 return False, 'Email must be unique'
-#             user = User(username=username, email=email, age=age, bio=bio)
-#         db.session.add(user)
-#         db.session.commit()
-#         return True, f'Successfully added user {username}'
-#     except Exception as e:
-#         app.logger.error(f'Error while writing to database: {e}')
-#         return False, 'Something went wrong'
-
-# @app.route('/user/create/', methods=('GET', 'POST'))
-# def create_user():
-#     if request.method == 'POST':
-#         success, msg = handle_user_update(request.form)
-#         if success:
-#             return redirect(url_for('index'))
-#         else: 
-#             flash(msg)
-#             return render_template('create.html', user=request.form)
-#     return render_template('create.html')
-
-# @app.route('/user/<int:id>/edit/', methods=('GET', 'POST'))
-# def edit_user(id):
-#     user = User.query.get_or_404(id)
-#     if request.method == 'POST':
-#         success, msg = handle_user_update(request.form, user)
-#         if success:
-#             return redirect(url_for('index'))
-#         else: 
-#             flash(msg)
-#             return render_template('edit.html', user=user)
-#     return render_template('edit.html', user=user)
-
-# @app.post('/user/<int:id>/delete/')
-# def delete_user(id):
-#     user = User.query.get_or_404(id)
-#     db.session.delete(user)
-#     db.session.commit()
-#     return redirect(url_for('index'))
 
 @app.route('/about/')
 def about():

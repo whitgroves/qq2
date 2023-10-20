@@ -1,23 +1,8 @@
-{% from 'macros.html' import display_tags, display_posts %}
+{% from 'macros.html' import display_users %}
 {% extends 'base.html' %}
 
 {% block content %}
     <h1>{% block title %} 🏠 {% endblock %} Welcome Home</h1>
-    <hr>
-    <h2>All Posts</h2>
-    {{ display_posts(posts) }}
-    {# {% for post in posts %}
-        <div class="card" style="margin: 8px 0px">
-            <div class="card-body">
-                <h5 class="card-title">{{ post.title }}</h5>
-                <p class="card-text">{{ post.content }}</p>
-            </div>
-            <div class="card-footer">
-                <a href="{{ url_for('post', id=post.id) }}">Comments</a> |
-                {{ display_tags(post) }}
-            </div>
-        </div>
-    {% endfor %} #}
     <hr>
     <h3>The current time is {{ utc_dt }} UTC</h3>
 {% endblock %}

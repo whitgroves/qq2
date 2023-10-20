@@ -1,4 +1,4 @@
-{# {% extends 'base.html' %}
+{% extends 'base.html' %}
 
 {% block content %}
     <h1>{% block title %} Edit User {% endblock %}</h1>
@@ -30,8 +30,8 @@
         </p>
     </form>
     <hr>
-    <form method="post" action="{{ url_for('delete', id=user.id) }}">
+    <form method="post" action="{{ url_for('delete_user', id=user.id) }}">
         <input type="submit" value="Delete" class="btn btn-danger"
                onclick="return confirm('Delete user forever?')">
     </form>
-{% endblock %} #}
+{% endblock %}
