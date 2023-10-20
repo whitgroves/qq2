@@ -11,6 +11,10 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
 
+post_tag = db.Table('post_tag',
+                    db.Column('post_id', db.Integer, db.ForeignKey('post.id')),
+                    db.Column('tag_id', db.Integer, db.ForeignKey('tag.id')))
+
 # class User(db.Model):
 #     id = db.Column(db.Integer, primary_key=True)
 #     username = db.Column(db.String(100), nullable=False)
@@ -31,9 +35,18 @@ class Post(db.Model):
     content = db.Column(db.Text)
     created_at = db.Column(db.DateTime(timezone=True), server_default=func.now())
     comments = db.relationship('Comment', backref='post')
+    tags = db.relationship('Tag', secondary=post_tag, backref='posts')
 
     def __repr__(self):
         return f'<Post {self.id}: {self.title}>'
+#endclass
+
+class Tag(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50), nullable=False)
+
+    def __repr__(self):
+        return f'<Tag "{self.name}">'
 #endclass
 
 class Comment(db.Model):
@@ -79,6 +92,11 @@ def delete_comment(id):
     db.session.commit()
     return redirect(url_for('post', id=post_id))
 
+@app.route('/tag/<name>/')
+def tag(name):
+    tag = Tag.query.filter_by(name=name).first_or_404()
+    return render_template('tag.html', tag=tag)
+
 # @app.route('/user/<int:id>/')
 # def user(id):
 #     user = User.query.get_or_404(id)
@@ -109,7 +127,7 @@ def delete_comment(id):
 #         return False, 'Something went wrong'
 
 # @app.route('/user/create/', methods=('GET', 'POST'))
-# def create():
+# def create_user():
 #     if request.method == 'POST':
 #         success, msg = handle_user_update(request.form)
 #         if success:
@@ -120,7 +138,7 @@ def delete_comment(id):
 #     return render_template('create.html')
 
 # @app.route('/user/<int:id>/edit/', methods=('GET', 'POST'))
-# def edit(id):
+# def edit_user(id):
 #     user = User.query.get_or_404(id)
 #     if request.method == 'POST':
 #         success, msg = handle_user_update(request.form, user)
@@ -132,7 +150,7 @@ def delete_comment(id):
 #     return render_template('edit.html', user=user)
 
 # @app.post('/user/<int:id>/delete/')
-# def delete(id):
+# def delete_user(id):
 #     user = User.query.get_or_404(id)
 #     db.session.delete(user)
 #     db.session.commit()

@@ -1,12 +1,16 @@
-{% from 'macros.html' import display_tags, display_posts %}
-{% extends 'base.html' %}
+{% macro display_tags(post) %}
+    <b>Tags:</b>
+    {% if post.tags|length == 0 %}
+        <i>None</i>
+    {% else %}
+        {% for tag in post.tags %}
+            <a href="{{ url_for('tag', name=tag.name) }}"><i>{{ tag.name }}</i></a>
+        {% endfor %}
+    {% endif %}
+{% endmacro %}
 
-{% block content %}
-    <h1>{% block title %} 🏠 {% endblock %} Welcome Home</h1>
-    <hr>
-    <h2>All Posts</h2>
-    {{ display_posts(posts) }}
-    {# {% for post in posts %}
+{% macro display_posts(posts) %}
+    {% for post in posts %}
         <div class="card" style="margin: 8px 0px">
             <div class="card-body">
                 <h5 class="card-title">{{ post.title }}</h5>
@@ -17,7 +21,5 @@
                 {{ display_tags(post) }}
             </div>
         </div>
-    {% endfor %} #}
-    <hr>
-    <h3>The current time is {{ utc_dt }} UTC</h3>
-{% endblock %}
+    {% endfor %}
+{% endmacro %}

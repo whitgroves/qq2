@@ -1,0 +1,7 @@
+{% from 'macros.html' import display_posts %}
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} 🏷 {% endblock %} Posts Tagged With "{{ tag.name }}"</h1>
+    {{ display_posts(tag.posts) }}
+{% endblock %}

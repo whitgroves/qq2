@@ -1,3 +1,4 @@
+{% from 'macros.html' import display_tags %}
 {% extends 'base.html' %}
 
 {% block content %}
@@ -9,7 +10,7 @@
     <hr>
     <h4>Comments</h4>
     {% for comment in post.comments %}
-    <div class="card text-bg-light" style="margin: 8px 0px">
+    <div class="card" style="margin: 8px 0px">
         <div class="card-body">
             <p class="card-text">{{ comment.content }}</p>
         </div>
@@ -20,7 +21,7 @@
     {% endfor %}
     <hr>
     <h4>Add Comment</h4>
-    <div class="card text-bg-light" style="margin: 8px 0px">
+    <div class="card" style="margin: 8px 0px">
         <form method="post">
             <div class="card-body">
                 <textarea name="content" cols="60" rows="5"></textarea>
@@ -30,4 +31,6 @@
             </div>
         </form>
     </div>
+    <hr>
+    {{ display_tags(post) }}
 {% endblock %}

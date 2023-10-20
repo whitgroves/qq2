@@ -3,7 +3,7 @@
 {% block content %}
     <h1>{% block title %} 💬 {% endblock %} Comments</h1>
     {% for comment in comments %}
-    <div class="card text-bg-light" style="margin: 8px 0px">
+    <div class="card" style="margin: 8px 0px">
         <div class="card-header">
             <p class="card-text"><i>Comment on <a href="{{ url_for('post', id=comment.post_id) }}"
                                                 >post #{{ comment.post_id }}</a> at {{ comment.created_at }}:</i></p>
