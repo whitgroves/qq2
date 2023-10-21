@@ -1,0 +1,23 @@
+{% extends 'base.html'%}
+
+{% block content %}
+    <h1>{% block title %} 💬 {% endblock %} Comments</h1>
+    <hr>
+    {% for comment in comments %}
+    <div class="card" style="margin: 8px 0px">
+        <div class="card-header">
+            <p class="card-text"><i>Comment on <a href="{{ url_for('posts.post', id=comment.post.id) }}"
+                                                >post #{{ comment.post_id }}</a> at {{ comment.created_at }}:</i></p>
+        </div>
+        <div class="card-body">
+            <p class="card-text">{{ comment.content }}</p>
+        </div>
+        <div class="card-footer">
+            <form method="POST" action="{{ url_for('posts.delete_comment', id=comment.id) }}">
+                <button type="submit" class="btn btn-danger btn-sm"
+                        onclick="return confirm('Delete this comment forever?')">Delete</button>
+            </form>
+        </div>
+    </div>
+    {% endfor %}
+{% endblock %}

@@ -12,13 +12,12 @@
     {% for post in posts %}
         <div class="card" style="margin: 8px 0px">
             <div class="card-body">
-                <h5 class="card-title">{{ post.title }}</h5>
+                <h5 class="card-title"><a href="{{ url_for('posts.post', id=post.id) }}"
+                                        >{{ post.title }}</a></h5>
                 <p class="card-text">{{ post.content }}</p>
             </div>
             <div class="card-footer">
-                {# <a href="{{ url_for('posts.tag', id=post.id) }}">Comments</a> | #}
                 <b>Tags:</b> {{ display_tags(post.tags) }}
-                {# <p class="card-text"><i>Created at {{ post.created_at }}</i></p> #}
             </div>
         </div>
     {% endfor %}

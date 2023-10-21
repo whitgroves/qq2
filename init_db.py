@@ -1,8 +1,7 @@
 from app import create_app
 from app.extensions import db
 from app.models.user import User
-from app.models.post import Post
-from app.models.tag import Tag
+from app.models.post import Post, Tag, Comment
 
 with create_app().app_context():
     db.drop_all()
@@ -15,7 +14,15 @@ with create_app().app_context():
     posts[0].tags.extend([tags[0], tags[3]])
     posts[2].tags.extend([tags[2], tags[1], tags[3]])
 
+    comments = [
+        Comment(content='Comment for the first post', post=posts[0]),
+        Comment(content='Comment for the second post', post=posts[1]),
+        Comment(content='Another comment for the second post', post_id=2),
+        Comment(content='Another comment for the first post', post_id=1),
+    ]
+
     db.session.add_all(users)
     db.session.add_all(posts)
     db.session.add_all(tags)
+    db.session.add_all(comments)
     db.session.commit()
