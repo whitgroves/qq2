@@ -1,0 +1,8 @@
+{% from 'macros.html' import display_tags %}
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} 🏷 {% endblock %} Tags</h1>
+    <hr>
+    {{ display_tags(tags) }}
+{% endblock %}

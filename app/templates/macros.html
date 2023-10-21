@@ -1,10 +1,9 @@
-{% macro display_tags(post) %}
-    <b>Tags:</b>
-    {% if post.tags|length == 0 %}
+{% macro display_tags(tags) %}
+    {% if tags|length == 0 %}
         <i>None</i>
     {% else %}
-        {% for tag in post.tags %}
-            <a href="{{ url_for('tag', name=tag.name) }}"><i>{{ tag.name }}</i></a>
+        {% for tag in tags %}
+            <a href="{{ url_for('posts.tag', name=tag.name) }}"><i>{{ tag.name }}</i></a>
         {% endfor %}
     {% endif %}
 {% endmacro %}
@@ -17,8 +16,9 @@
                 <p class="card-text">{{ post.content }}</p>
             </div>
             <div class="card-footer">
-                <a href="{{ url_for('post', id=post.id) }}">Comments</a> |
-                {{ display_tags(post) }}
+                {# <a href="{{ url_for('posts.tag', id=post.id) }}">Comments</a> | #}
+                <b>Tags:</b> {{ display_tags(post.tags) }}
+                {# <p class="card-text"><i>Created at {{ post.created_at }}</i></p> #}
             </div>
         </div>
     {% endfor %}
@@ -27,19 +27,20 @@
 {% macro display_users(users) %}
     {% for user in users %}
         <div class="card" style="margin: 8px 0px">
-            <div class="card-header">
+            {# <div class="card-header">
                 <h5 class="card-title"><a href="{{ url_for('user', id=user.id) }}"
                                         >{{ user.username }}</a></h5>
-            </div>
+            </div> #}
             <div class="card-body">
-                <p class="card-text"><b>Age:</b> {{ user.age }}</p>
+                <p class="card-text">{{ user.username }} (<i>{{ user.email }}</i>)</p>
+                {# <p class="card-text"><b>Age:</b> {{ user.age }}</p>
                 <p class="card-text"><b>Bio:</b> 
                     {% if user.bio and user.bio|length > 0 %}
                         {{ user.bio }}
                     {% else %}
                         <i>None</i>
                     {% endif %}
-                </p>
+                </p> #}
             </div>
             <div class="card-footer">
                 <p class="card-text"><b>Joined:</b> {{ user.created_at }}</p>

@@ -7,7 +7,7 @@
     <h3>{{ post.title }}</h3>
     <p><i>{{ post.created_at }}</i></p>
     <h5 class="card-text">{{ post.content }}</h5>
-    <hr>
+    {# <hr>
     <h4>Comments</h4>
     {% for comment in post.comments %}
     <div class="card" style="margin: 8px 0px">
@@ -31,6 +31,6 @@
             </div>
         </form>
     </div>
-    <hr>
+    <hr> #}
     {{ display_tags(post) }}
 {% endblock %}

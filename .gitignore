@@ -4,3 +4,6 @@ __*__/
 
 # databases
 *.db
+
+# environment files
+*.env
