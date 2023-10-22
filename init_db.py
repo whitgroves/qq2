@@ -1,7 +1,7 @@
 from app import create_app
 from app.extensions import db
-from app.models.user import User
-from app.models.post import Post, Tag, Comment
+from app.models.users import User
+from app.models.posts import Post, Tag, Comment
 
 with create_app().app_context():
     db.drop_all()

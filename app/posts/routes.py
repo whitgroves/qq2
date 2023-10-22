@@ -1,7 +1,7 @@
 from flask import render_template, request, flash, redirect, url_for
 from app.posts import bp
 from app.extensions import db
-from app.models.post import Post, Tag, Comment
+from app.models.posts import Post, Tag, Comment
 
 @bp.route('/')
 def index():

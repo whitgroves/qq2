@@ -1,13 +1,14 @@
 from flask import Flask
 from config import Config
-from app.extensions import db
+from app.extensions import db, migrate
 
 def create_app(config=Config):
     app = Flask(__name__)
     app.config.from_object(config)
 
-    # init extensions (e.g. sqlalchemy)
+    # init extensions (e.g. database)
     db.init_app(app)
+    migrate.init_app(app, db)
 
     # register blueprints
     from app.main import bp as main_bp
