@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>👤 {% block title %}{{ user.username }}{% endblock %}</h1>
+    <hr>
+    <p><b>Email:</b> {{ user.email }}</p>
+    <p><b>Bio:</b> 
+        {% if user.bio and user.bio|length > 0 %}
+            {{ user.bio }}
+        {% else %}
+            <i>None</i>
+        {% endif %}</p>
+    <p><b>Joined:</b> {{ user.created_at }}</p>
+    <p><b>Active:</b> {{ 'Yes' if user.active else 'No' }}</p>
+    <hr>
+    <a class="btn btn-warning" 
+        href="{{ url_for('users.edit', id=user.id) }}">Edit</a>
+{% endblock %}
