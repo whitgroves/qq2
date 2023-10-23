@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, flash, redirect, url_for, abort
 from app.extensions import db
 from app.models.posts import Post, Tag, Comment
+from app.forms import CommentForm
 from flask_login import login_required, current_user
 
 bp = Blueprint('posts', __name__)
@@ -13,7 +14,8 @@ def index():
 @bp.route('/<int:id>/')
 def post(id):
     post = Post.query.get_or_404(id)
-    return render_template('posts/post.html', post=post)
+    form = CommentForm()
+    return render_template('posts/post.html', post=post, form=form)
 
 @bp.route('/tags/')
 def tags():
@@ -34,10 +36,9 @@ def comments():
 @login_required
 def add_comment(id):
     post = Post.query.get_or_404(id)
-    content = request.form['content']
-    if len(content) == 0:
-        flash('Comment cannot be blank.')
-    else:
+    form = CommentForm()
+    content = form.content.data
+    if form.validate_on_submit():
         comment = Comment(content=content, post=post, user=current_user)
         db.session.add(comment)
         db.session.commit()

@@ -3,19 +3,18 @@
 {% block content %}
     <h1>{% block title %} 🐱‍💻 {% endblock %} Sign In</h1>
     <hr>
-    <form method="POST">
+    <form method="post">
+        {{ form.csrf_token }}
         <div class="mb-3" >
-            <label for="user_email" class="form-label">Email or Username:</label>
-            <input type="text" class="form-control" name="user_email" 
-                value="{{ user_email if user_email }}" required>
+            <h5>{{ form.user_email.label }}</h5>
+            <p>{{ form.user_email(size=100) }}</p>
         </div>
         <div class="mb-3">
-            <label for="password" class="form-label">Password:</label>
-            <input type="password" class="form-control" name="password" required>
+            <h5>{{ form.password.label }}</h5>
+            <p>{{ form.password(size=100) }}</p>
         </div>
         <div class="mb-3">
-            <input type="checkbox" class="form-check-input" name="remember">
-            <label for="remember" class="form-label">Remember Me</label>
+            <p>{{ form.remember() }} {{ form.remember.label }}</p>
         </div>
         <br>
         <button type="submit" class="btn btn-primary">Sign In</button>

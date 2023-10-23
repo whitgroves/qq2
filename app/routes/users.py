@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, abort
 from app.extensions import db
 from app.models.users import User
+from app.forms import UserForm
 from flask_login import login_required, current_user
 
 bp = Blueprint('users', __name__)
@@ -21,28 +22,30 @@ def edit(id):
     if id != current_user.id:
         abort(403)
     user = User.query.get_or_404(id)
-    if request.method == 'POST':
-        username = request.form['username']
-        email = request.form['email']
-        bio = request.form['bio']
-        errors = False
-        if len(User.query.filter_by(username=username).all()) > int(user.username == username):
-            flash('Username should be unique.')
-            errors = True
-        if len(User.query.filter_by(email=email).all()) > int(user.email == email):
-            flash('Email must be unique.')
-            errors = True
-        if not errors:
-            user.username = username
-            user.email = email
-            user.bio = bio
-            db.session.add(user)
-            db.session.commit()
-            flash(f'User {username} updated successfully.')
-        return redirect(url_for('users.user', id=user.id))
-    return render_template('users/edit.html', user=user)
+    form = UserForm()
+    match request.method:
+        case 'GET':
+            return render_template('users/edit.html', user=user, form=form)
+        case 'POST':
+            username = form.username.data
+            email = form.email.data
+            bio = form.bio.data
+            if len(User.query.filter_by(email=email).all()) > int(user.email == email):
+                flash('Email must be unique.')
+                return render_template('users/edit.html', user=user, form=form)
+            if form.validate_on_submit():
+                user.username = username
+                user.email = email
+                user.bio = bio
+                db.session.add(user)
+                db.session.commit()
+                flash(f'User {username} updated successfully.')
+            return redirect(url_for('users.edit', id=user.id))
+        case _:
+            abort(400)
 
 @bp.post('/<int:id>/delete/')
+@login_required
 def delete(id):
     if id != current_user.id:
         abort(403)
