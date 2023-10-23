@@ -1,0 +1,9 @@
+# hidden folders
+__*__/
+.*/
+
+# databases
+*.db
+
+# environment files - make sure to add via --env at runtime!!
+*.env

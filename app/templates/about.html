@@ -9,18 +9,11 @@
         <a href="https://www.amazon.com/Apprenticeship-Patterns-Guidance-Aspiring-Craftsman/dp/0596518382"
            target="_blank"><em>Apprenticeship Patterns: Guidance for the Aspiring Software Craftsman</em></a>.
     </h5>
-    {# <br>
-    <h4>
-        The current version is based on the tutorial series,
-        "<a href="https://www.digitalocean.com/community/tutorial-series/how-to-create-web-sites-with-flask"
-           target="_blank">How To Build Web Applications with Flask</a>", by DigitalOcean.
-    </h4> #}
     <br>
-    <h5>To build this site I relied on these tutorials, guides, and resources:</h5>
+    <h5>Special thanks to the authors of these tutorials, guides, and posts:</h5>
     <ul>
         {% for link in links %}
             <li><a href="{{ link }}">{{ link }}</a></li>
         {% endfor %}
     </ul>
-    <h5>Thank you to the authors for sharing your knowledge.</h5>
 {% endblock %}

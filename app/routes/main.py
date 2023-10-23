@@ -16,5 +16,8 @@ def about() -> str:
         'https://www.codium.ai/blog/flask-sqlalchemy-tutorial/',
         'https://www.digitalocean.com/community/tutorials/how-to-add-authentication-to-your-app-with-flask-login',
         'https://stackoverflow.com/questions/77215107/importerror-cannot-import-name-url-decode-from-werkzeug-urls',
+        'https://www.freecodecamp.org/news/how-to-dockerize-a-flask-app/',
+        'https://stackoverflow.com/questions/30494050/how-do-i-pass-environment-variables-to-docker-containers',
+        'https://docs.docker.com/engine/reference/commandline/build/',
     ]
     return render_template('about.html', links=links)
