@@ -3,5 +3,8 @@
 {% block content %}
     <h1>{% block title %} 🏠 {% endblock %} Home</h1>
     <hr>
-    <h4>Welcome back. The current time is {{ utc_dt }} UTC.</h4>
+    <h4>
+        {% if current_user.is_authenticated %}Welcome back, {{ current_user.username}}. {% endif %}
+        The current time is {{ utc_dt }} UTC.
+    </h4>
 {% endblock %}

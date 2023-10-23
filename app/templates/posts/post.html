@@ -19,18 +19,20 @@
         </div>
     </div>
     {% endfor %}
-    <hr>
-    <h4>Add Comment</h4>
-    <div class="card" style="margin: 8px 0px">
-        <form method="post" action="{{ url_for('posts.add_comment', id=post.id) }}">
-            <div class="card-body">
-                <textarea name="content" cols="60" rows="5"></textarea>
-            </div>
-            <div class="card-footer">
-                <button type="submit" class="btn btn-primary">Reply</button>
-            </div>
-        </form>
-    </div>
+    {% if current_user.is_authenticated %}
+        <hr>
+        <h4>Add Comment</h4>
+        <div class="card" style="margin: 8px 0px">
+            <form method="post" action="{{ url_for('posts.add_comment', id=post.id) }}">
+                <div class="card-body">
+                    <textarea name="content" cols="60" rows="5"></textarea>
+                </div>
+                <div class="card-footer">
+                    <button type="submit" class="btn btn-primary">Reply</button>
+                </div>
+            </form>
+        </div>
+    {% endif %}
     <hr>
     {{ display_tags(post.tags) }}
 {% endblock %}

@@ -1,9 +1,11 @@
 from app.models.shared import *
+from flask_login import UserMixin
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     id = Column(Integer, primary_key=True)
-    username = Column(String(100), nullable=False)
     email = Column(String(80), nullable=False, unique=True)
+    password = Column(String(100), nullable=False)
+    username = Column(String(100), nullable=False)
     bio = Column(Text)
     created_at = Column(DateTime(timezone=True), server_default=func.now()) # CURRENT_TIMESTAMP
     # active = Column(Boolean, nullable=False, server_default=expression.true())

@@ -1,7 +1,9 @@
-from flask import render_template, request, redirect, url_for, flash
-from app.users import bp
+from flask import Blueprint, render_template, request, redirect, url_for, flash, abort
 from app.extensions import db
 from app.models.users import User
+from flask_login import login_required, current_user
+
+bp = Blueprint('users', __name__)
 
 @bp.route('/')
 def index():
@@ -14,7 +16,10 @@ def user(id):
     return render_template('users/user.html', user=user)
 
 @bp.route('/<int:id>/edit/', methods=('GET', 'POST'))
+@login_required
 def edit(id):
+    if id != current_user.id:
+        abort(403)
     user = User.query.get_or_404(id)
     if request.method == 'POST':
         username = request.form['username']
@@ -39,6 +44,8 @@ def edit(id):
 
 @bp.post('/<int:id>/delete/')
 def delete(id):
+    if id != current_user.id:
+        abort(403)
     user = User.query.get_or_404(id)
     db.session.delete(user)
     db.session.commit()

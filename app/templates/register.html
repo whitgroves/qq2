@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} ✍ {% endblock %} Sign Up</h1>
+    <hr>
+    <form method="POST">
+        <div class="mb-3" >
+            <label for="email" class="form-label">Email:</label>
+            <input type="email" class="form-control" name="email" value="{{ email if email }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Password:</label>
+            <input type="password" class="form-control" name="password" required>
+        </div>
+        <div class="mb-3">
+            <label for="username" class="form-label">Username:</label>
+            <input type="text" class="form-control" name="username" value="{{ username if username }}">
+        </div>
+        <br>
+        <button type="submit" class="btn btn-success">Sign Up</button>
+    </form>
+{% endblock %}

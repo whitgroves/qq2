@@ -15,12 +15,14 @@
         <div class="card-body">
             <p class="card-text">{{ comment.content }}</p>
         </div>
-        <div class="card-footer">
-            <form method="POST" action="{{ url_for('posts.delete_comment', id=comment.id) }}">
-                <button type="submit" class="btn btn-danger btn-sm"
-                    onclick="return confirm('Delete this comment forever?')">Delete</button>
-            </form>
-        </div>
+        {% if current_user.is_authenticated and current_user.id == comment.user.id %}
+            <div class="card-footer">
+                <form method="POST" action="{{ url_for('posts.delete_comment', id=comment.id) }}">
+                    <button type="submit" class="btn btn-danger btn-sm"
+                        onclick="return confirm('Delete this comment forever?')">Delete</button>
+                </form>
+            </div>
+        {% endif %}
     </div>
     {% endfor %}
 {% endblock %}

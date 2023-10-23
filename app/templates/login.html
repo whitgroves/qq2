@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h1>{% block title %} 🐱‍💻 {% endblock %} Sign In</h1>
+    <hr>
+    <form method="POST">
+        <div class="mb-3" >
+            <label for="user_email" class="form-label">Email or Username:</label>
+            <input type="text" class="form-control" name="user_email" 
+                value="{{ user_email if user_email }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Password:</label>
+            <input type="password" class="form-control" name="password" required>
+        </div>
+        <div class="mb-3">
+            <input type="checkbox" class="form-check-input" name="remember">
+            <label for="remember" class="form-label">Remember Me</label>
+        </div>
+        <br>
+        <button type="submit" class="btn btn-primary">Sign In</button>
+    </form>
+{% endblock %}
