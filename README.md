@@ -10,7 +10,7 @@ $ echo SECRET_KEY=(generate or make one up) > .env
 With Docker 🐋:
 ```
 $ docker build -t qq2 .
-$ docker run -d -p 3223:3223 --env-file .env qq2
+$ docker run -p 80:80 --env-file .env qq2
 ```
 The old-fashioned way 👴:
 ```
@@ -18,6 +18,6 @@ $ python3 -m venv .venv
 $ source .venv/Scripts/activate
 (venv) $ pip install -r requirements.txt
 (venv) $ python3 -m init_db
-(venv) $ flask run --port=3223
+(venv) $ flask run --port=80
 ```
-After that navigate to [`localhost:3223`](http://localhost:3223/).
+After that navigate to [`localhost`](http://localhost/) to view the app.

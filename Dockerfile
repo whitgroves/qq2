@@ -16,5 +16,5 @@ COPY . .
 RUN python -m init_db
 
 # run
-CMD [ "flask", "run", "--host=0.0.0.0", "--port=3223" ]
-EXPOSE 3223
+CMD [ "flask", "run", "--host=0.0.0.0", "--port=80" ]
+EXPOSE 80
