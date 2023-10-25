@@ -1,12 +1,12 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, BooleanField
+from wtforms import StringField, TextAreaField, BooleanField, PasswordField, EmailField
 from wtforms.validators import InputRequired, Length
 
 # NOTE: first param of each field is the displayed label text
 
 # users/id/edit
 class UserForm(FlaskForm):
-    email = StringField('Email', validators=[InputRequired(), Length(max=80)])
+    email = EmailField('Email', validators=[InputRequired(), Length(max=80)])
     username = StringField('Username', validators=[InputRequired(), Length(max=100)])
     bio = TextAreaField('Bio')
 
@@ -16,12 +16,12 @@ class CommentForm(FlaskForm):
 
 # register
 class RegisterForm(FlaskForm):
-    email = StringField('Email', validators=[InputRequired(), Length(max=80)])
-    password = StringField('Password', validators=[InputRequired(), Length(max=100)])
+    email = EmailField('Email', validators=[InputRequired(), Length(max=80)])
+    password = PasswordField('Password', validators=[InputRequired(), Length(max=100)])
     username = StringField('Username', validators=[InputRequired(), Length(max=100)])
 
 # login
 class LoginForm(FlaskForm):
-    user_email = StringField('Username or Email', validators=[InputRequired()])
-    password = StringField('Password', validators=[InputRequired()])
+    user_email = EmailField('Username or Email', validators=[InputRequired()])
+    password = PasswordField('Password', validators=[InputRequired()])
     remember = BooleanField('Remember me?')
