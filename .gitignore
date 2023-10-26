@@ -1,9 +1,10 @@
 # hidden folders
-__*__/
-.*/
+__pycache__/
+.old/
+.pytest_cache/
+.venv/
+.vscode/
 
-# databases
+# hidden files
 *.db
-
-# environment files
-*.env
+.env
