@@ -6,15 +6,13 @@ on:
   push:
     branches:
       - main
+      - test
 
 jobs:
   run-tests:
     name: Run Tests
     runs-on: ubuntu-latest
     environment: test
-    
-    env:
-      SECRET_KEY: 2319067e4c2c3d6ae0ab1bd981f482553a7ff22c44dd59d3853b912576b2e7f4
     
     steps:
       - name: Checkout
