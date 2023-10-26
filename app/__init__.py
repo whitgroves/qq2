@@ -2,9 +2,12 @@ from flask import Flask
 from config import Config
 from app.extensions import db, migrate, manager
 
-def create_app(config=Config):
+def create_app(config=Config) -> Flask:
     app = Flask(__name__)
     app.config.from_object(config)
+    
+    if app.testing:
+        app.logger.info('App configured for testing mode.')
 
     # init extensions (e.g. database)
     db.init_app(app)

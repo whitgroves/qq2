@@ -4,7 +4,7 @@
     <h1>{% block title %} 🏠 {% endblock %} Home</h1>
     <hr>
     <h4>
-        {% if current_user.is_authenticated %}Welcome back, {{ current_user.username}}. {% endif %}
+        {% if current_user.is_authenticated %}Welcome back, {{ current_user.username }}. {% endif %}
         The current time is {{ utc_dt }} UTC.
     </h4>
 {% endblock %}
