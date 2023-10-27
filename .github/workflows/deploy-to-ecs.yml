@@ -46,10 +46,10 @@ jobs:
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
       - name: Load Task Definition
-        # env:
-        #   TASK_DEFINITION: ${{ vars.TASK_DEFINITION }}
+        env:
+          TASK_DEFINITION: ${{ vars.TASK_DEFINITION }}
         run: |
-          echo ${{ vars.TASK_DEFINITION }} > task-def.json
+          echo $TASK_DEFINITION > task-def.json
 
       - name: Update Image ID in ECS Task Definition
         id: task-def
