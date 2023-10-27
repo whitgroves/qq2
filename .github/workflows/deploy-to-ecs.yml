@@ -13,19 +13,12 @@ on:
 
 jobs:
   deploy:
-    name: Login Test # Deploy
+    name: Deploy Test
     runs-on: ubuntu-latest
     environment: prod
   
     permissions:
       id-token: write
-
-    # env: # TODO B
-    #   AWS_REGION: ${{ vars.AWS_REGION }}
-    #   ECS_SERVICE: ${{ vars.ECS_SERVICE }}
-    #   ECS_CLUSTER: ${{ vars.ECS_CLUSTER }}
-    #   ECS_TASK_DEFINITION: ${{ vars.ECS_TASK_DEFINITION }}
-    #   CONTAINER_NAME: ${{ vars.CONTAINER_NAME }}
   
     steps:
       - name: Checkout
@@ -48,25 +41,34 @@ jobs:
           ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
           IMAGE_TAG: ${{ github.sha }}
         run: |
-          echo SECRET_KEY=${{ secrets.SECRET_KEY }} > .env
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
 
-      # - name: Update Image ID in ECS Task Definition
-      #   id: task-def # used to link to next step
-      #   uses: aws-actions/amazon-ecs-render-task-definition@v1 # TODO 6
-      #   with:
-      #     task-definition: ${{ env.ECS_TASK_DEFINITION }} 
-      #     container-name: ${{ env.CONTAINER_NAME }}
-      #     image: ${{ steps.build-image.outputs.image }} # TODO 5.5
-      
-      # - name: Deploy ECS Task Definition
-      #   uses: aws-actions/amazon-ecs-deploy-task-definition@v1 # TODO 7
-      #   with:
-      #     task-definition: ${{ steps.task-def.outputs.task-definition }} # TODO 6.5
-      #     service: ${{ env.ECS_SERVICE }}
-      #     cluster: ${{ env.ECS_CLUSTER }}
-      #     wait-for-service-stability: true # TODO 8
+      - name: Load Task Definition
+        env:
+          TASK_DEFINITION: ${{ toJSON(vars.TASK_DEFINITION) }}
+        run: |
+          echo $TASK_DEFINITION > task-def.json
+
+      - name: Update Image ID in ECS Task Definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        # env:
+        #   CONTAINER_NAME: ${{ vars.CONTAINER_NAME }}
+        with:
+          task-definition: task-def.json
+          container-name: ${{ vars.CONTAINER_NAME }}
+          image: ${{ steps.build-image.outputs.image }}
+          environment-variables: |
+            SECRET_KEY=${{ secrets.SECRET_KEY }}
+
+      - name: Deploy ECS Task Definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1 # TODO 7
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: ${{ vars.ECS_SERVICE }}
+          cluster: ${{ vars.ECS_CLUSTER }}
+          wait-for-service-stability: true # TODO 8
 
       # # TODO A: push to 'prod' branch? look up best practices and other projects
