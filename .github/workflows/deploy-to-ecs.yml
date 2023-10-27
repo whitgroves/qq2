@@ -1,0 +1,73 @@
+# GitHub workflow to build and deploy a Docker image to AWS on push to main branch.
+# https://docs.github.com/en/actions/deployment/deploying-to-your-cloud-provider/deploying-to-amazon-elastic-container-service
+
+name: Deploy to Amazon ECS
+
+run-name: ${{ github.repository }} / ${{ github.ref_name }} / ${{ github.sha }}
+
+# TODO 9: https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    name: Login Test # Deploy
+    runs-on: ubuntu-latest
+    environment: prod
+  
+    permissions:
+      id-token: write
+
+    # env: # TODO B
+    #   AWS_REGION: ${{ vars.AWS_REGION }}
+    #   ECR_REPOSITORY: ${{ vars.ECR_REPOSITORY }}
+    #   ECS_SERVICE: ${{ vars.ECS_SERVICE }}
+    #   ECS_CLUSTER: ${{ vars.ECS_CLUSTER }}
+    #   ECS_TASK_DEFINITION: ${{ vars.ECS_TASK_DEFINITION }}
+    #   CONTAINER_NAME: ${{ vars.CONTAINER_NAME }}
+  
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ vars.AWS_ACTIONS_ROLE }}
+          aws-region: ${{ vars.AWS_REGION }}
+
+      # - name: Login to ECR
+      #   id: login-ecr # used to link to next step
+      #   uses: aws-actions/amazon-ecr-login@v2 # TODO 3
+      
+      # - name: Build and Push to ECR
+      #   id: build-image # used to link to next step
+      #   env:
+      #     ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }} # TODO 3.5
+      #     IMAGE_TAG: ${{ github.sha }} # TODO 4
+      #   run: | # https://stackoverflow.com/questions/15540635/what-is-the-use-of-the-pipe-symbol-in-yaml
+      #     echo SECRET_KEY=${{ secrets.SECRET_KEY }} > .env # fireball
+      #     docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+      #     docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+      #     echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+      #   # ^ TODO 5
+
+      # - name: Update Image ID in ECS Task Definition
+      #   id: task-def # used to link to next step
+      #   uses: aws-actions/amazon-ecs-render-task-definition@v1 # TODO 6
+      #   with:
+      #     task-definition: ${{ env.ECS_TASK_DEFINITION }} 
+      #     container-name: ${{ env.CONTAINER_NAME }}
+      #     image: ${{ steps.build-image.outputs.image }} # TODO 5.5
+      
+      # - name: Deploy ECS Task Definition
+      #   uses: aws-actions/amazon-ecs-deploy-task-definition@v1 # TODO 7
+      #   with:
+      #     task-definition: ${{ steps.task-def.outputs.task-definition }} # TODO 6.5
+      #     service: ${{ env.ECS_SERVICE }}
+      #     cluster: ${{ env.ECS_CLUSTER }}
+      #     wait-for-service-stability: true # TODO 8
+
+      # # TODO A: push to 'prod' branch? look up best practices and other projects
