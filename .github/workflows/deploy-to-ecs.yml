@@ -3,9 +3,8 @@
 
 name: Deploy to Amazon ECS
 
-run-name: ${{ github.repository }} / ${{ github.ref_name }} / ${{ github.sha }}
+run-name: ${{ github.ref_name }} / ${{ github.sha }}
 
-# TODO 9: https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#workflow_run
 on:
   push:
     branches:
@@ -13,7 +12,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy Test
+    name: Deploy App
     runs-on: ubuntu-latest
     environment: prod
   
@@ -64,11 +63,9 @@ jobs:
             SECRET_KEY=${{ secrets.SECRET_KEY }}
 
       - name: Deploy ECS Task Definition
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1 # TODO 7
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
           service: ${{ vars.ECS_SERVICE }}
           cluster: ${{ vars.ECS_CLUSTER }}
-          wait-for-service-stability: true # TODO 8
-
-      # # TODO A: push to 'prod' branch? look up best practices and other projects
+          wait-for-service-stability: true
