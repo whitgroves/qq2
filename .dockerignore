@@ -1,9 +1,10 @@
 # hidden folders
-__*__/
-.*/
+__pycache__/
+.github/
+.old/
+.pytest_cache/
+.venv/
+.vscode/
 
-# databases
+# hidden files
 *.db
-
-# environment files - make sure to add via --env at runtime!!
-*.env

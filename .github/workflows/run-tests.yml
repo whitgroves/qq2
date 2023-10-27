@@ -1,11 +1,10 @@
-name: Run Automated Tests
+name: Run Tests
 
-run-name: ${{ github.repository }}/${{ github.ref_name }}/${{ github.sha }}
+run-name: ${{ github.repository }} / ${{ github.ref_name }} / ${{ github.sha }}
 
 on:
   push:
     branches:
-      - main
       - test
 
 jobs:
