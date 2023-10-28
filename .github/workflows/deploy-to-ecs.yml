@@ -53,8 +53,6 @@ jobs:
       - name: Update Image ID in ECS Task Definition
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
-        # env:
-        #   CONTAINER_NAME: ${{ vars.CONTAINER_NAME }}
         with:
           task-definition: task-def.json
           container-name: ${{ vars.CONTAINER_NAME }}

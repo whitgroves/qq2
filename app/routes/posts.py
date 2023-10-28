@@ -11,9 +11,11 @@ def index():
     posts = Post.query.all()
     return render_template('posts/index.html', posts=posts)
 
-@bp.route('/<int:id>/')
+@bp.route('/<int:id>')
 def post(id):
-    post = Post.query.get_or_404(id)
+    post = db.session.get(Post, id)
+    if not post:
+        return redirect(url_for('posts.index'))
     form = CommentForm()
     return render_template('posts/post.html', post=post, form=form)
 
@@ -22,7 +24,7 @@ def tags():
     tags = Tag.query.all()
     return render_template('posts/tags.html', tags=tags)
 
-@bp.route('/tags/<name>/')
+@bp.route('/tags/<name>')
 def tag(name):
     tag = Tag.query.filter_by(name=name).first_or_404()
     return render_template('posts/tag.html', tag=tag)
@@ -32,22 +34,28 @@ def comments():
     comments = Comment.query.all()
     return render_template('posts/comments.html', comments=comments)
 
-@bp.post('/<int:id>/comment/')
+@bp.post('/<int:id>/comments/add/')
 @login_required
 def add_comment(id):
-    post = Post.query.get_or_404(id)
+    post = Post.query.filter_by(id=id).first_or_404()
     form = CommentForm()
     content = form.content.data
-    if form.validate_on_submit():
-        comment = Comment(content=content, post=post, user=current_user)
+    errors = False
+    code = 400 # catch errors for testing
+    if content is None or len(content) == 0:
+        flash("Can't reply with empty comment.")
+        errors = True
+    if not errors and form.validate_on_submit():
+        comment = Comment(content=content.strip(), post=post, user=current_user)
         db.session.add(comment)
         db.session.commit()
-    return redirect(url_for('posts.post', id=post.id))
+        code = 302 # default for redirect()
+    return redirect(url_for('posts.post', id=post.id), code=code)
 
-@bp.post('/comment/<int:id>/delete/')
+@bp.post('/comments/<int:id>/delete/')
 @login_required
 def delete_comment(id):
-    comment = Comment.query.get_or_404(id)
+    comment = Comment.query.filter_by(id=id).first_or_404()
     if comment.user.id != current_user.id:
         abort(403)
     post_id = comment.post.id
