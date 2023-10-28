@@ -11,38 +11,45 @@ def index():
     users = User.query.all()
     return render_template('users/index.html', users=users)
 
-@bp.route('/<int:id>/')
+@bp.route('/<int:id>')
 def user(id):
-    user = User.query.get_or_404(id)
+    user = db.session.get(User, id)
+    if not user:
+        return redirect(url_for('users.index'))
     return render_template('users/user.html', user=user)
 
-@bp.route('/<int:id>/edit/', methods=('GET', 'POST'))
+@bp.route('/<int:id>/edit', methods=('GET', 'POST'))
 @login_required
 def edit(id):
     if id != current_user.id:
         abort(403)
-    user = User.query.get_or_404(id)
+    user = db.session.get(User, id)
+    if not user:
+        return redirect(url_for('users.index'), code=403)
     form = UserForm()
     match request.method:
         case 'GET':
             return render_template('users/edit.html', user=user, form=form)
         case 'POST':
-            username = form.username.data
-            email = form.email.data
-            bio = form.bio.data
+            username = form.username.data or user.username
+            email = form.email.data or user.email
+            bio = form.bio.data or user.bio
+            errors = False
             if len(User.query.filter_by(email=email).all()) > int(user.email == email):
                 flash('Email must be unique.')
-                return render_template('users/edit.html', user=user, form=form)
-            if form.validate_on_submit():
+                errors = True
+            if not errors and form.validate_on_submit():
                 user.username = username
                 user.email = email
                 user.bio = bio
                 db.session.add(user)
                 db.session.commit()
                 flash(f'User {username} updated successfully.')
-            return redirect(url_for('users.edit', id=user.id))
+                return redirect(url_for('users.edit', id=user.id))
+            else:
+                return render_template('users/edit.html', user=user, form=form), 400
         case _:
-            abort(400)
+            abort(405)
 
 @bp.post('/<int:id>/delete/')
 @login_required
