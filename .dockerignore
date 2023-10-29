@@ -1,11 +1,9 @@
 # hidden folders
-__pycache__/
-.github/
-.old/
-.pytest_cache/
-.venv/
-.vscode/
+__*__/
+.*/
 
-# hidden files
+# db files
 *.db
-*.json
+
+# exception
+!.env
