@@ -1,11 +1,10 @@
-# hidden folders
-__pycache__/
-.old/
-.pytest_cache/
-.venv/
-.vscode/
+# hidden folders 
+__*__/
+.*/
+# (apparently .github/workflows is always tracked)
 
-# hidden files
+# local db's
 *.db
+
+# local env
 .env
-*.json

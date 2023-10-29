@@ -11,9 +11,10 @@ class Config:
                                 environ.get('DATABASE_URI') or \
                                 'sqlite:///' + join(abspath(dirname(__file__)), 'qq2.db')
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    TESTING = False
 
 class TestConfig(Config):
     TESTING = True
     SECRET_KEY = token_hex(32)
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + join(abspath(dirname(__file__)), 'tests', 'qq2.db')
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + join(abspath(dirname(__file__)), 'tests', 'qq2_test.db')
     # WTF_CSRF_ENABLED = False

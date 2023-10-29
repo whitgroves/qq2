@@ -15,28 +15,26 @@ user_data = [dict(email=f'user{i}@test.net', username=f'user{i}', password=f'tes
 
 @fixture()
 def app() -> Flask:
+    
     app = create_app(TestConfig)
 
-    # https://testdriven.io/blog/flask-contexts/#testing-example
-    with app.app_context():
+    with app.app_context(): # https://testdriven.io/blog/flask-contexts/#testing-example
 
-        # resource setup
-        db.create_all()
+        # populate test db
         test_users = [User(email=u['email'], username=u['username'], password=generate_password_hash(u['password'])) for u in user_data]
         test_post = Post(title='Underwater Basket Weaving 101', content='I put on my robe and wizard hat 🧙‍♂️', user=test_users[0])
         test_comments = [Comment(content=x, post=test_post, user=test_users[0]) for x in ['first', 'second']]
         test_tag = Tag(name='depricated')
         test_post.tags.append(test_tag)
+
         db.session.add_all(test_users)
         db.session.add(test_post)
         db.session.add_all(test_comments)
         db.session.add(test_tag)
         db.session.commit()
 
+        # yielded in app context so downstream fixtures/tests have access to it for logins, CSRF tokens, etc.
         yield app
-
-        # resource cleanup 
-        db.drop_all()
 
 @fixture()
 def client(app:Flask) -> FlaskClient:
