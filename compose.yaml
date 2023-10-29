@@ -1,0 +1,11 @@
+services:
+  qq2-app:
+    build:
+      context: ./
+    volumes:
+      - .data:/qq2/.data
+    ports:
+      - 80:80
+
+volumes:
+  .data:

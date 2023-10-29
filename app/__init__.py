@@ -47,5 +47,6 @@ def create_app(config=Config) -> Flask:
             db.drop_all()
             db.create_all()
     app.logger.info('Database ready.')
+    app.logger.debug(f'Database URI: {config.SQLALCHEMY_DATABASE_URI}')
     
     return app
