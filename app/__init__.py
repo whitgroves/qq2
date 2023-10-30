@@ -4,9 +4,10 @@ from logging import Formatter
 from config import Config
 from app.extensions import db, migrate, manager
 from app.models.users import User
-from app.models.posts import Post, Comment, Tag # included for db init, see EOF
+from app.models.posts import Post, Comment, Tag
 from os.path import exists, dirname
 from os import makedirs
+from sqlalchemy import inspect
 
 default_handler.setFormatter(Formatter('qq2 [{levelname}]: {message}', style='{'))
 
@@ -41,17 +42,26 @@ def create_app(config=Config) -> Flask:
 
     from app.routes.posts import bp as post_routes
     app.register_blueprint(post_routes, url_prefix='/posts')
+
+    # init db - the db doesn't exist, tables are missing, or we're testing, then rebuild the db
+    init_db = False
+
+    if 'sqlite:///' in config.SQLALCHEMY_DATABASE_URI:
+        db_path = dirname(config.SQLALCHEMY_DATABASE_URI.split('sqlite:///')[-1])
+        if not exists(db_path):
+            makedirs(db_path)
+            init_db = True
     
-    # init db - must import data models for SQLAlchemy first to build out all tables
-    db_file = config.SQLALCHEMY_DATABASE_URI.split('sqlite:///')[-1]
-    db_path = dirname(db_file)
-    if not exists(db_path): makedirs(db_path)
-    if config.TESTING or not exists(db_file):
-        app.logger.info('Initializing database...')
-        with app.app_context():
+    with app.app_context():
+        # context is needed to inspect()
+        if not all(inspect(db.engine).has_table(x.__tablename__) for x in [User, Post, Comment, Tag]):
+            app.logger.warning('Tables missing in database. Rebuilding...')
+            init_db = True
+        if init_db or config.TESTING:
+            app.logger.info('Initializing database...')
             db.drop_all()
             db.create_all()
+        
     app.logger.info('Database ready.')
-    app.logger.debug(f'Database URI: {config.SQLALCHEMY_DATABASE_URI}')
     
     return app
