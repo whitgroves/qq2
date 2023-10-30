@@ -47,7 +47,7 @@ jobs:
         env:
           ECS_TASK_DEFINITION: ${{ secrets.ECS_TASK_DEFINITION }}
         run: |
-          echo "::add-mask::$ECS_TASK_DEFINITION" > task-def.json
+          echo $ECS_TASK_DEFINITION > task-def.json
 
       - name: Update Image ID in ECS Task Definition
         id: task-def
