@@ -1,5 +1,5 @@
 services:
-  qq2-app:
+  app:
     build:
       context: ./
     volumes:
