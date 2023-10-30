@@ -4,6 +4,7 @@ from logging import Formatter
 from config import Config
 from app.extensions import db, migrate, manager
 from app.models.users import User
+from app.models.posts import Post, Comment, Tag # included for db init, see EOF
 from os.path import exists, dirname
 from os import makedirs
 
@@ -41,13 +42,11 @@ def create_app(config=Config) -> Flask:
     from app.routes.posts import bp as post_routes
     app.register_blueprint(post_routes, url_prefix='/posts')
     
-    # init db - must happen after route registration for SQLAlchemy to pick up all data models
-    init_db = config.TESTING # would default to False but we always want to reset when testing
-    db_path = dirname(config.SQLALCHEMY_DATABASE_URI.split('sqlite:///')[-1])
-    if not exists(db_path):
-        makedirs(db_path)
-        init_db = True
-    if init_db:
+    # init db - must import data models for SQLAlchemy first to build out all tables
+    db_file = config.SQLALCHEMY_DATABASE_URI.split('sqlite:///')[-1]
+    db_path = dirname(db_file)
+    if not exists(db_path): makedirs(db_path)
+    if config.TESTING or not exists(db_file):
         app.logger.info('Initializing database...')
         with app.app_context():
             db.drop_all()
