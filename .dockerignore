@@ -5,5 +5,8 @@ __*__/
 # db files
 *.db
 
-# exception
+# compose file
+compose.yaml
+
+# always include .env
 !.env

@@ -4,7 +4,8 @@ from logging import Formatter
 from config import Config
 from app.extensions import db, migrate, manager
 from app.models.users import User
-from os.path import exists
+from os.path import exists, dirname
+from os import makedirs
 
 default_handler.setFormatter(Formatter('qq2 [{levelname}]: {message}', style='{'))
 
@@ -41,11 +42,17 @@ def create_app(config=Config) -> Flask:
     app.register_blueprint(post_routes, url_prefix='/posts')
     
     # init db - must happen after route registration for SQLAlchemy to pick up all data models
-    if config.TESTING or not exists(config.SQLALCHEMY_DATABASE_URI.split('sqlite:///')[-1]):
+    init_db = config.TESTING # would default to False but we always want to reset when testing
+    db_path = dirname(config.SQLALCHEMY_DATABASE_URI.split('sqlite:///')[-1])
+    if not exists(db_path):
+        makedirs(db_path)
+        init_db = True
+    if init_db:
         app.logger.info('Initializing database...')
         with app.app_context():
             db.drop_all()
             db.create_all()
     app.logger.info('Database ready.')
+    app.logger.debug(f'Database URI: {config.SQLALCHEMY_DATABASE_URI}')
     
     return app

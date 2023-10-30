@@ -10,8 +10,7 @@ $ echo SECRET_KEY=(generate or make one up) > .env
 ```
 Then deploy with Docker 🐋:
 ```
-$ docker build -t qq2 .
-$ docker run -p 80:80 qq2
+$ docker compose up -d
 ```
 Or the old-fashioned way 👴:
 ```

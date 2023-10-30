@@ -1,4 +1,3 @@
-# GitHub workflow to build and deploy a Docker image to AWS on push to main branch.
 # https://docs.github.com/en/actions/deployment/deploying-to-your-cloud-provider/deploying-to-amazon-elastic-container-service
 
 name: Deploy to Amazon ECS
@@ -26,8 +25,8 @@ jobs:
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: ${{ vars.AWS_ACTIONS_ROLE }}
-          aws-region: ${{ vars.AWS_REGION }}
+          role-to-assume: ${{ secrets.AWS_ACTIONS_ROLE }}
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Login to ECR
         id: login-ecr
@@ -46,9 +45,9 @@ jobs:
 
       - name: Load Task Definition
         env:
-          TASK_DEFINITION: ${{ vars.TASK_DEFINITION }}
+          ECS_TASK_DEFINITION: ${{ secrets.ECS_TASK_DEFINITION }}
         run: |
-          echo $TASK_DEFINITION > task-def.json
+          echo "::add-mask::$ECS_TASK_DEFINITION" > task-def.json
 
       - name: Update Image ID in ECS Task Definition
         id: task-def
