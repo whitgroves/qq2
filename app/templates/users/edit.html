@@ -14,7 +14,7 @@
         <p><button type="submit" class="btn btn-primary">Update</button></p>
     </form>
     <hr>
-    <form method="post" action="{{ url_for('users.delete', id=user.id) }}">
+    <form method="post" action="{{ url_for('users.delete', _id=user.id) }}">
         <input type="submit" value="Delete" class="btn btn-danger"
                onclick="return confirm('Delete user forever?')">
     </form>

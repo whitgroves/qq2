@@ -1,4 +1,8 @@
 # qq2
+![Test](https://github.com/whitgroves/qq2/actions/workflows/run-tests.yml/badge.svg)
+![Deploy](https://github.com/whitgroves/qq2/actions/workflows/deploy-to-ecs.yml/badge.svg)
+[![linting: pylint](https://img.shields.io/badge/linting-pylint-yellowgreen)](https://github.com/pylint-dev/pylint)
+
 Back in 2021, I made [qqueue](https://github.com/whitgroves/qqueue) based on the ["breakable toy" pattern](https://www.amazon.com/Apprenticeship-Patterns-Guidance-Aspiring-Craftsman/dp/0596518382) to practice web development. This is another take at that concept, with the goal of putting more production-level practices ... into practice.
 
 ## Quickstart

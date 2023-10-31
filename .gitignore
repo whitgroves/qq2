@@ -1,7 +1,9 @@
 # hidden folders 
 __*__/
 .*/
-# (apparently .github/workflows is always tracked)
+
+# github actions
+!.github/
 
 # local db's
 *.db
