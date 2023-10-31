@@ -1,10 +1,13 @@
-from .conftest import FlaskClient
+"""Test for the main routes of qq2."""
+from flask import testing
 
-def test_index(client:FlaskClient) -> None:
+def test_index(client:testing.FlaskClient) -> None:
+    """Tests that the homepage displays correctly."""
     response = client.get('/')
     assert 'The current time is' in response.text
 
-def test_about(client:FlaskClient) -> None:
+def test_about(client:testing.FlaskClient) -> None:
+    """Tests that the about page displays correctly."""
     response = client.get('/about')
-    test_link = 'https://www.digitalocean.com/community/tutorial-series/how-to-create-web-sites-with-flask'
-    assert f'<a href="{test_link}">{test_link}</a>' in response.text
+    test_link = 'https://github.com/whitgroves/qq2'
+    assert f'<a href="{test_link}" target="_blank">' in response.text

@@ -2,7 +2,7 @@
 
 name: Deploy to Amazon ECS
 
-run-name: ${{ github.ref_name }} / ${{ github.sha }}
+run-name: deploy -- ${{ github.ref_name }} / ${{ github.sha }}
 
 on:
   push:

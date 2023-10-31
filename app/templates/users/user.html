@@ -15,6 +15,6 @@
     {% if current_user.is_authenticated and current_user.id == user.id %}
         <hr>
         <a class="btn btn-warning" 
-            href="{{ url_for('users.edit', id=user.id) }}">Edit</a>
+            href="{{ url_for('users.edit', _id=user.id) }}">Edit</a>
     {% endif %}
 {% endblock %}

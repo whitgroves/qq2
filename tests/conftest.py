@@ -1,41 +1,52 @@
-from pytest import fixture
-from app import create_app
-from app.extensions import db
-from app.models.users import User
-from app.models.posts import Post, Comment, Tag
-from werkzeug.security import generate_password_hash
-from config import TestConfig
-from flask import Flask
-from flask.testing import FlaskClient
+"""Test module for qq2. Assumes app/ folder is in the same directory."""
+import pytest
+import flask
+from flask import testing
+from werkzeug import security
+import app as qq2
+from app import models
+from app import config as cfg
+from app import extensions as ext
 
 # user1_data = dict(email='user1@test.net', username='test1', password='test1')
 # user2_data = dict(email='user2@test.net', username='test2', password='test2')
 
-user_data = [dict(email=f'user{i}@test.net', username=f'user{i}', password=f'test{i}') for i in range(2)]
+user_data = [{'email':f'user{i}@test.net',
+              'username':f'user{i}',
+              'password':'test{i}'}
+              for i in range(2)]
 
-@fixture()
-def app() -> Flask:
-    
-    app = create_app(TestConfig)
+@pytest.fixture()
+def app() -> flask.Flask:
+    """Returns a test instance of qq2."""
+    _app = qq2.create_app(cfg.TestConfig)
 
-    with app.app_context(): # https://testdriven.io/blog/flask-contexts/#testing-example
-
-        # populate test db
-        test_users = [User(email=u['email'], username=u['username'], password=generate_password_hash(u['password'])) for u in user_data]
-        test_post = Post(title='Underwater Basket Weaving 101', content='I put on my robe and wizard hat 🧙‍♂️', user=test_users[0])
-        test_comments = [Comment(content=x, post=test_post, user=test_users[0]) for x in ['first', 'second']]
-        test_tag = Tag(name='depricated')
+    with _app.app_context(): # setup test records
+        test_users = [models.User(email=u['email'],
+                                  username=u['username'],
+                                  password=security.generate_password_hash(u['password']))
+                                  for u in user_data]
+        test_post = models.Post(title='Underwater Basket Weaving 101',
+                                content='I put on my robe and wizard hat 🧙‍♂️',
+                                user=test_users[0])
+        test_comments = [models.Comment(content=x,
+                                        post=test_post,
+                                        user=test_users[0])
+                                        for x in ['first', 'second']]
+        test_tag = models.Tag(name='depricated')
         test_post.tags.append(test_tag)
 
-        db.session.add_all(test_users)
-        db.session.add(test_post)
-        db.session.add_all(test_comments)
-        db.session.add(test_tag)
-        db.session.commit()
+        ext.db.session.add_all(test_users)
+        ext.db.session.add(test_post)
+        ext.db.session.add_all(test_comments)
+        ext.db.session.add(test_tag)
+        ext.db.session.commit()
 
-        # yielded in app context so downstream fixtures/tests have access to it for logins, CSRF tokens, etc.
-        yield app
+        # yielded in app context so downstream fixtures/tests have access to it
+        # https://testdriven.io/blog/flask-contexts/#testing-example
+        yield _app
 
-@fixture()
-def client(app:Flask) -> FlaskClient:
+@pytest.fixture()
+def client(app:flask.Flask) -> testing.FlaskClient: # fixtures, pylint:disable=redefined-outer-name
+    """Returns a test client for the test instance."""
     return app.test_client()

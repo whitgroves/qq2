@@ -23,7 +23,7 @@
         <hr>
         <h4>Add Comment</h4>
         <div class="card" style="margin: 8px 0px">
-            <form method="post" action="{{ url_for('posts.add_comment', id=post.id) }}">
+            <form method="post" action="{{ url_for('posts.add_comment', _id=post.id) }}">
                 {{ form.csrf_token }}
                 <div class="card-body">
                     {{ form.content(rows=5, cols=60) }}

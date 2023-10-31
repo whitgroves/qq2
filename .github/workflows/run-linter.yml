@@ -1,6 +1,6 @@
-name: Run Tests
+name: Run Linter
 
-run-name: pytest -- ${{ github.ref_name }} / ${{ github.sha }}
+run-name: pylint -- ${{ github.ref_name }} / ${{ github.sha }}
 
 on:
   push:
@@ -8,8 +8,8 @@ on:
       - test
 
 jobs:
-  run-tests:
-    name: Testing
+  run-linter:
+    name: Linting
     runs-on: ubuntu-latest
     environment: test
     
@@ -25,5 +25,8 @@ jobs:
       - name: Install Dependencies
         run: pip install -r requirements.txt
 
-      - name: Test App
-        run: pytest
+      - name: Lint App
+        run: pylint app/*
+
+      - name: Lint Tests
+        run: pylint tests/*

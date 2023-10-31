@@ -1,27 +1,44 @@
-from flask_wtf import FlaskForm
-from wtforms import StringField, TextAreaField, BooleanField, PasswordField, EmailField
-from wtforms.validators import InputRequired, Length
+"""Secured web forms for qq2.
 
-# NOTE: first param of each field is the displayed label text
+Note that the first parameter of each Field object is the displayed label text.
+For more info see:
+    - https://wtforms.readthedocs.io/en/3.1.x/ (WTForms)
+    - https://flask-wtf.readthedocs.io/en/0.15.x/ (Flask-WTF)
+
+For standard usage, see app/templates/login.html
+"""
+import wtforms
+import wtforms.validators
+import flask_wtf
+
+def input_required(max_len:int=None) -> list:
+    """Helps build validator lists for required fields."""
+    validators = [wtforms.validators.InputRequired()]
+    if max_len is not None:
+        validators.append(wtforms.validators.Length(max=max_len))
 
 # users/id/edit
-class UserForm(FlaskForm):
-    email = EmailField('Email', validators=[InputRequired(), Length(max=80)])
-    username = StringField('Username', validators=[InputRequired(), Length(max=100)])
-    bio = TextAreaField('Bio')
+class UserForm(flask_wtf.FlaskForm):
+    """Update form for user information."""
+    email = wtforms.EmailField('Email', validators=input_required(80))
+    username = wtforms.StringField('Username', validators=input_required(100))
+    bio = wtforms.TextAreaField('Bio')
 
 # posts/id (comment)
-class CommentForm(FlaskForm):
-    content = TextAreaField('Comment', validators=[InputRequired()])
+class CommentForm(flask_wtf.FlaskForm):
+    """Comment form."""
+    content = wtforms.TextAreaField('Comment', validators=input_required())
 
 # register
-class RegisterForm(FlaskForm):
-    email = EmailField('Email', validators=[InputRequired(), Length(max=80)])
-    password = PasswordField('Password', validators=[InputRequired(), Length(max=100)])
-    username = StringField('Username', validators=[InputRequired(), Length(max=100)])
+class RegisterForm(flask_wtf.FlaskForm):
+    """Registration form for new users."""
+    email = wtforms.EmailField('Email', validators=input_required(80))
+    password = wtforms.PasswordField('Password', validators=input_required(100))
+    username = wtforms.StringField('Username', validators=input_required(100))
 
 # login
-class LoginForm(FlaskForm):
-    user_email = StringField('Username or Email', validators=[InputRequired()])
-    password = PasswordField('Password', validators=[InputRequired()])
-    remember = BooleanField('Remember me?')
+class LoginForm(flask_wtf.FlaskForm):
+    """Login form for returning users."""
+    user_email = wtforms.StringField('Username or Email', validators=input_required())
+    password = wtforms.PasswordField('Password', validators=input_required())
+    remember = wtforms.BooleanField('Remember me?')
