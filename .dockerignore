@@ -5,8 +5,8 @@ __*__/
 # db files
 *.db
 
-# compose file
-compose.yaml
+# hidden files
+.*
 
-# always include .env
+# container environment
 !.env

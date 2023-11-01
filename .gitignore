@@ -8,5 +8,8 @@ __*__/
 # local db's
 *.db
 
-# local env
-.env
+# hidden files
+.*
+
+# dockerfile
+!.dockerfile

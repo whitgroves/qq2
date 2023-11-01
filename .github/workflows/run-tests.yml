@@ -1,6 +1,6 @@
-name: Run Tests
+name: Pytest
 
-run-name: pytest -- ${{ github.ref_name }} / ${{ github.sha }}
+run-name: test -- ${{ github.ref_name }} / ${{ github.sha }}
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
       - test
 
 jobs:
-  run-tests:
+  test:
     name: Testing
     runs-on: ubuntu-latest
     environment: test
