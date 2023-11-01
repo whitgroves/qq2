@@ -11,10 +11,9 @@
             <i>None</i>
         {% endif %}</p>
     <p><b>Joined:</b> {{ user.created_at }}</p>
-    {# <p><b>Active:</b> {{ 'Yes' if user.active else 'No' }}</p> #}
     {% if current_user.is_authenticated and current_user.id == user.id %}
         <hr>
         <a class="btn btn-warning" 
-            href="{{ url_for('users.edit', id_=user.id) }}">Edit</a>
+            href="{{ url_for('users.edit_user', id_=user.id) }}">Edit User</a>
     {% endif %}
 {% endblock %}

@@ -7,18 +7,35 @@
     <h3>{{ post.title }}</h3>
     <p><i>{{ post.created_at }}</i></p>
     <h5 class="card-text">{{ post.content }}</h5>
-    <hr>
-    <h4>Comments</h4>
-    {% for comment in post.comments %}
-    <div class="card" style="margin: 8px 0px">
-        <div class="card-body">
-            <p class="card-text">{{ comment.content }}</p>
+    {% if current_user.is_authenticated and current_user.id == post.user.id %}
+        <br>
+        <a class="btn btn-warning" href="{{ url_for('posts.edit_post', id_=post.id) }}">Edit Post</a>
+    {% endif %}
+    {% if post.comments|length > 0 %}
+        <hr>
+        <h4>Comments</h4>
+        {% for comment in post.comments %}
+        <div class="card" style="margin: 8px 0px">
+            <div class="card-header">
+                <i>
+                    <a href="{{ url_for('users.get_user', id_=comment.user.id) }}">{{ comment.user.username }}</a>
+                    at {{ comment.created_at }}:
+                </i>
+            </div>
+            <div class="card-body">
+                <p class="card-text">{{ comment.content }}</p>
+            </div>
+            {% if current_user.is_authenticated and current_user.id == comment.user.id %}
+            <div class="card-footer">
+                <form method="POST" action="{{ url_for('posts.delete_comment', id_=comment.id) }}">
+                    <button type="submit" class="btn btn-danger btn-sm"
+                        onclick="return confirm('Delete this comment forever?')">Delete Comment</button>
+                </form>
+            </div>
+        {% endif %}
         </div>
-        <div class="card-footer">
-            <p class="card-text"><i>{{ comment.created_at }}</i></p>
-        </div>
-    </div>
-    {% endfor %}
+        {% endfor %}
+    {% endif %}
     {% if current_user.is_authenticated %}
         <hr>
         <h4>Add Comment</h4>
@@ -29,7 +46,7 @@
                     {{ form.content(rows=5, cols=60) }}
                 </div>
                 <div class="card-footer">
-                    <button type="submit" class="btn btn-primary">Reply</button>
+                    <button type="submit" class="btn btn-success">Reply to Post</button>
                 </div>
             </form>
         </div>

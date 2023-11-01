@@ -7,13 +7,13 @@ from app import extensions as ext
 bp = flask.Blueprint('users', __name__)
 
 @bp.route('/')
-def index():
+def index() -> flask.Response:
     """Returns a list of all users."""
     users = models.User.query.all()
     return flask.render_template('users/index.html', users=users)
 
 @bp.route('/<int:id_>')
-def get_user(id_):
+def get_user(id_:int) -> flask.Response:
     """Returns a specific user's profile."""
     user = ext.db.session.get(models.User, id_)
     if not user:
@@ -22,7 +22,7 @@ def get_user(id_):
 
 @bp.route('/<int:id_>/edit', methods=('GET', 'POST'))
 @flask_login.login_required
-def edit(id_):
+def edit_user(id_:int) -> flask.Response:
     """Handles user profile updates."""
     if id_ != flask_login.current_user.id:
         flask.abort(403)
@@ -51,7 +51,8 @@ def edit(id_):
                 ext.db.session.add(user)
                 ext.db.session.commit()
                 flask.flash(f'User {username} updated successfully.')
-                return flask.redirect(flask.url_for('users.edit', id_=user.id))
+                return flask.redirect(flask.url_for('users.edit_user',
+                                                    id_=user.id))
             return flask.render_template('users/edit.html',
                                          user=user,
                                          form=form), 400
@@ -60,7 +61,7 @@ def edit(id_):
 
 @bp.post('/<int:id_>/delete/')
 @flask_login.login_required
-def delete(id_):
+def delete_user(id_:int) -> flask.Response:
     """Handles user profile deletions."""
     if id_ != flask_login.current_user.id:
         flask.abort(403)

@@ -24,6 +24,12 @@ class UserForm(flask_wtf.FlaskForm):
     username = wtforms.StringField('Username', validators=input_required(100))
     bio = wtforms.TextAreaField('Bio')
 
+# posts/new (post)
+class PostForm(flask_wtf.FlaskForm):
+    """Post form."""
+    title = wtforms.StringField('Title', validators=input_required(100))
+    content = wtforms.TextAreaField('Content', validators=input_required())
+
 # posts/id (comment)
 class CommentForm(flask_wtf.FlaskForm):
     """Comment form."""

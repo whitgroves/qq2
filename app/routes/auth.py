@@ -36,7 +36,7 @@ def register() -> flask.Response:
             return flask.render_template('register.html', form=form), 400
         case _:
             flask.current_app.logger.warn(
-                f'405: /register: {flask.request.method}: {flask.request}')
+                f'405: /auth/register: {flask.request.method}: {flask.request}')
             flask.abort(405)
 
 @bp.route('/login', methods=('GET', 'POST'))
@@ -66,11 +66,11 @@ def login() -> flask.Response:
             return flask.render_template('login.html', form=form), 400
         case _:
             flask.current_app.logger.warn(
-                f'405: /login: {flask.request.method}: {flask.request}')
+                f'405: /auth/login: {flask.request.method}: {flask.request}')
             flask.abort(405)
 
-@bp.route('/logout')
 @flask_login.login_required
+@bp.route('/logout')
 def logout() -> flask.Response:
     """Logs the current user out."""
     name = flask_login.current_user.username

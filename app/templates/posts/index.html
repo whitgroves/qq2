@@ -4,5 +4,9 @@
 {% block content %}
     <h1>{% block title %} 📰 {% endblock %} Posts</h1>
     <hr>
+    {% if current_user.is_authenticated %}
+        <a class="btn btn-success" href="{{ url_for('posts.new_post') }}">New Post</a>
+        <hr>
+    {% endif %}
     {{ display_posts(posts) }}
 {% endblock %}

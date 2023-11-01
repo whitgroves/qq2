@@ -11,11 +11,11 @@
         <p>{{ form.username(size=80) }}</p>
         <h5>{{ form.bio.label }}</h5>
         <p>{{ form.bio(rows=15, cols=60) }}</p>
-        <p><button type="submit" class="btn btn-primary">Update</button></p>
+        <p><button type="submit" class="btn btn-primary">Update Account</button></p>
     </form>
     <hr>
-    <form method="post" action="{{ url_for('users.delete', id_=user.id) }}">
-        <input type="submit" value="Delete" class="btn btn-danger"
+    <form method="post" action="{{ url_for('users.delete_user', id_=user.id) }}">
+        <input type="submit" value="Delete Account" class="btn btn-danger"
                onclick="return confirm('Delete user forever?')">
     </form>
 {% endblock %}
