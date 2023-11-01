@@ -2,12 +2,10 @@
 from flask import testing
 
 def test_index(client:testing.FlaskClient) -> None:
-  """Tests that the homepage displays correctly."""
-  response = client.get('/')
-  assert 'The current time is' in response.text
+    response = client.get('/')
+    assert 'The current time is' in response.text
 
 def test_about(client:testing.FlaskClient) -> None:
-  """Tests that the about page displays correctly."""
-  response = client.get('/about')
-  test_link = 'https://github.com/whitgroves/qq2'
-  assert f'<a href="{test_link}" target="_blank">' in response.text
+    response = client.get('/about')
+    test_link = 'https://github.com/whitgroves/qq2'
+    assert f'<a href="{test_link}" target="_blank">' in response.text

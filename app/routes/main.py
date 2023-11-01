@@ -6,11 +6,11 @@ bp = flask.Blueprint('main', __name__)
 
 @bp.route('/')
 def index() -> flask.Response:
-  """Returns the homepage."""
-  return flask.render_template('index.html',
-                               utc_dt=datetime.datetime.now(datetime.UTC))
+    """Returns the homepage."""
+    return flask.render_template('index.html',
+                                 utc_dt=datetime.datetime.now(datetime.UTC))
 
 @bp.route('/about')
 def about() -> flask.Response:
-  """Returns the about page."""
-  return flask.render_template('about.html')
+    """Returns the about page."""
+    return flask.render_template('about.html')
