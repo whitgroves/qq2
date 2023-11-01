@@ -36,6 +36,12 @@ def test_post(client:testing.FlaskClient) -> None:
     assert response.status_code == 200
     assert response.request.path == '/posts/'
 
+# TODO: test create post
+
+# TODO: test update post
+
+# TODO; test delete post
+
 def test_tags(client:testing.FlaskClient) -> None:
     # Page loads with all info
     response = client.get('/posts/tags/')

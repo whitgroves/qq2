@@ -39,7 +39,7 @@ def create_app(config:cfg.BaseConfig=cfg.DefaultConfig) -> flask.Flask:
 
     # init extensions
     ext.db.init_app(app)
-    ext.migrate.init_app(app, ext.db)
+    # ext.migrate.init_app(app, ext.db)
     ext.manager.init_app(app)
 
     # internal imports - done this way to avoid circular reference
