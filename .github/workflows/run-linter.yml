@@ -1,6 +1,6 @@
-name: Run Linter
+name: Pylint
 
-run-name: pylint -- ${{ github.ref_name }} / ${{ github.sha }}
+run-name: lint -- ${{ github.ref_name }} / ${{ github.sha }}
 
 on:
   push:
@@ -8,7 +8,7 @@ on:
       - test
 
 jobs:
-  run-linter:
+  lint:
     name: Linting
     runs-on: ubuntu-latest
     environment: test

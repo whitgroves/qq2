@@ -10,7 +10,7 @@
 
 {% macro display_post_stats(post) %}
     {% set n_comments = post.comments|length %}
-    <a href="{{ url_for('posts.get_post', _id=post.id) }}">{{ n_comments }} Comment{% if n_comments != 1 %}s{% endif %}</a> |
+    <a href="{{ url_for('posts.get_post', id_=post.id) }}">{{ n_comments }} Comment{% if n_comments != 1 %}s{% endif %}</a> |
     Tags: {{ display_tags(post.tags) }}
 {% endmacro %}
 
@@ -20,7 +20,7 @@
             <div class="card-header">
                 <h5 class="card-text">{{ post.title }}</h5>
                 <p class="card-text">
-                    <i>By <a href="{{ url_for('users.get_user', _id=post.user.id) }}">{{ post.user.username }}</a>
+                    <i>By <a href="{{ url_for('users.get_user', id_=post.user.id) }}">{{ post.user.username }}</a>
                          at {{ post.created_at }} UTC</i>
                 </p>
             </div>
@@ -38,7 +38,7 @@
     {% for user in users %}
         <div class="card" style="margin: 8px 0px">
             <div class="card-header">
-                <h5 class="card-title"><a href="{{ url_for('users.get_user', _id=user.id) }}">{{ user.username }}</a></h5>
+                <h5 class="card-title"><a href="{{ url_for('users.get_user', id_=user.id) }}">{{ user.username }}</a></h5>
             </div>
             {% if user.posts|length > 0 %}
                 <ul class="list-group list-group-flush">

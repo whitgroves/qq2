@@ -8,8 +8,8 @@
         <div class="card-header">
             <p class="card-text">
                 <i>Comment by 
-                    <a href="{{ url_for('users.get_user', _id=comment.user.id) }}">{{ comment.user.username }}</a> on 
-                    <a href="{{ url_for('posts.get_post', _id=comment.post.id) }}">post #{{ comment.post_id }}</a> at 
+                    <a href="{{ url_for('users.get_user', id_=comment.user.id) }}">{{ comment.user.username }}</a> on 
+                    <a href="{{ url_for('posts.get_post', id_=comment.post.id) }}">post #{{ comment.post_id }}</a> at 
                         {{ comment.created_at }}:</i></p>
         </div>
         <div class="card-body">
@@ -17,7 +17,7 @@
         </div>
         {% if current_user.is_authenticated and current_user.id == comment.user.id %}
             <div class="card-footer">
-                <form method="POST" action="{{ url_for('posts.delete_comment', _id=comment.id) }}">
+                <form method="POST" action="{{ url_for('posts.delete_comment', id_=comment.id) }}">
                     <button type="submit" class="btn btn-danger btn-sm"
                         onclick="return confirm('Delete this comment forever?')">Delete</button>
                 </form>

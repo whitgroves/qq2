@@ -1,6 +1,6 @@
 # https://docs.github.com/en/actions/deployment/deploying-to-your-cloud-provider/deploying-to-amazon-elastic-container-service
 
-name: Deploy to Amazon ECS
+name: Deploy to ECS
 
 run-name: deploy -- ${{ github.ref_name }} / ${{ github.sha }}
 
@@ -11,7 +11,7 @@ on:
 
 jobs:
   deploy:
-    name: Deploy App
+    name: Deploy
     runs-on: ubuntu-latest
     environment: prod
   
