@@ -15,6 +15,10 @@ user_data = [{'email':f'user{i}@test.net',
               'username':f'user{i}',
               'password':f'test{i}'} for i in range(2)]
 
+post_data = [{'title': f'Underwater Basket Weaving {i+1}01',
+              'content': f'Step {i+1}: I put on my robe and wizard hat 🧙‍♂️'} 
+              for i in range(2)]
+
 @pytest.fixture()
 def app() -> flask.Flask:
     """Creates an instance of the qq2 app.
@@ -30,18 +34,19 @@ def app() -> flask.Flask:
                                   password= \
                                     ws.generate_password_hash(u['password']))
                                   for u in user_data]
-        test_post = models.Post(title='Underwater Basket Weaving 101',
-                                content='I put on my robe and wizard hat 🧙‍♂️',
-                                user=test_users[0])
+        test_posts = [models.Post(title=t['title'],
+                                  content=t['content'],
+                                  user=test_users[0])
+                                  for t in post_data]
         test_comments = [models.Comment(content=x,
-                                        post=test_post,
+                                        post=test_posts[0],
                                         user=test_users[0])
                                         for x in ['first', 'second']]
         test_tag = models.Tag(name='depricated')
-        test_post.tags.append(test_tag)
+        test_posts[0].tags.append(test_tag)
 
         ext.db.session.add_all(test_users)
-        ext.db.session.add(test_post)
+        ext.db.session.add_all(test_posts)
         ext.db.session.add_all(test_comments)
         ext.db.session.add(test_tag)
         ext.db.session.commit()

@@ -87,6 +87,17 @@ def edit_post(id_:int) -> flask.Response:
                 f'405: /posts/new: {flask.request.method}: {flask.request}')
             flask.abort(405)
 
+@bp.post('/<int:id_>/delete/')
+@fl.login_required
+def delete_post(id_:int) -> flask.Response:
+    """Deletes the post specified by <id_> and its associated comments."""
+    post = models.Post.query.filter_by(id=id_).first_or_404()
+    if post.user.id != fl.current_user.id:
+        flask.abort(403)
+    ext.db.session.delete(post)
+    ext.db.session.commit()
+    return flask.redirect(flask.url_for('posts.index'))
+
 @bp.route('/tags/')
 def get_tags() -> flask.Response:
     """Returns all tags."""
