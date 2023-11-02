@@ -23,9 +23,8 @@ def get_post(id_:int) -> flask.Response:
     form = forms.CommentForm()
     return flask.render_template('posts/post.html', post=post, form=form)
 
-# TODO: write test
-@fl.login_required
 @bp.route('/new', methods=('GET', 'POST'))
+@fl.login_required
 def new_post() -> flask.Response:
     """Creates a new post."""
     form = forms.PostForm()
@@ -33,28 +32,31 @@ def new_post() -> flask.Response:
         case 'GET':
             return flask.render_template('posts/new.html', form=form)
         case 'POST':
-            title = form.title.data.strip()
-            content = form.content.data.strip()
+            title = form.title.data
+            content = form.content.data
             tags = [models.Tag(name='TODO'),
                     models.Tag(name='NotImplementedException')]
-            if form.validate_on_submit():
+            errors = False
+            if not title or not content:
+                flask.flash('Post title and content required.')
+                errors = True
+            if not errors and form.validate_on_submit():
                 post = models.Post(title=title,
                                    content=content,
                                    user_id=fl.current_user.id,
                                    tags=tags)
                 ext.db.session.add(post)
                 ext.db.session.commit()
-                flask.current_app.logger.debug(f'New post: {post}')
-                return flask.redirect(flask.url_for('posts.index'))
+                return flask.redirect(flask.url_for('posts.get_post',
+                                                    id_=post.id))
             return flask.render_template('posts/new.html', form=form), 400
         case _:
             flask.current_app.logger.warn(
                 f'405: /posts/new: {flask.request.method}: {flask.request}')
             flask.abort(405)
 
-# TODO: write test
-@fl.login_required
 @bp.route('/<int:id_>/edit', methods=('GET', 'POST'))
+@fl.login_required
 def edit_post(id_:int) -> flask.Response:
     """Updates the post specified by <id_> if the current user wrote it."""
     post = ext.db.session.get(models.Post, id_)
@@ -70,8 +72,8 @@ def edit_post(id_:int) -> flask.Response:
                                          form=form)
         case 'POST':
             if form.validate_on_submit():
-                post.title = form.title.data.strip() or post.title
-                post.content = form.content.data.strip() or post.content
+                post.title = form.title.data or post.title
+                post.content = form.content.data or post.content
                 # post.tags = form.tags.data
                 ext.db.session.add(post)
                 ext.db.session.commit()
@@ -103,14 +105,10 @@ def get_comments() -> flask.Response:
     comments = models.Comment.query.all()
     return flask.render_template('posts/comments.html', comments=comments)
 
-@fl.login_required
 @bp.post('/<int:id_>/comments/add/')
+@fl.login_required
 def add_comment(id_:int) -> flask.Response:
     """Adds a comment to the post specified by <id_>."""
-    if isinstance(fl.current_user, fl.AnonymousUserMixin):
-        # TODO: figure out why this behavior changed with the last commit;
-        # flask-login should manage this automatically (and does elsewhere).
-        return flask.redirect(flask.url_for('auth.login'))
     post = models.Post.query.filter_by(id=id_).first_or_404()
     form = forms.CommentForm()
     content = form.content.data
@@ -129,14 +127,10 @@ def add_comment(id_:int) -> flask.Response:
     return flask.redirect(flask.url_for('posts.get_post', id_=post.id),
                           code=code)
 
-@fl.login_required
 @bp.post('/comments/<int:id_>/delete/')
+@fl.login_required
 def delete_comment(id_:int) -> flask.Response:
     """Deletes the comment specified by <id_>."""
-    if isinstance(fl.current_user, fl.AnonymousUserMixin):
-        # TODO: figure out why this behavior changed with the last commit;
-        # flask-login should manage this automatically (and does elsewhere).
-        return flask.redirect(flask.url_for('auth.login'))
     comment = models.Comment.query.filter_by(id=id_).first_or_404()
     if comment.user.id != fl.current_user.id:
         flask.abort(403)

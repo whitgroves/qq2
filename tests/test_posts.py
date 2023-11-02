@@ -36,11 +36,122 @@ def test_post(client:testing.FlaskClient) -> None:
     assert response.status_code == 200
     assert response.request.path == '/posts/'
 
-# TODO: test create post
+def test_new_post(client:testing.FlaskClient) -> None:
+    # Setup - login
+    client.get('/login') # creates CSRF token - do NOT move
+    login_data = {'csrf_token': flask.g.csrf_token,
+                  'user_email': user0['email'],
+                  'password': user0['password']}
+    client.post('/login', data=login_data) #pylint: disable=duplicate-code
 
-# TODO: test update post
+     # Post is added successfully
+    content_valid = {'csrf_token': flask.g.csrf_token,
+                     'title': 'post #2',
+                     'content': 'the second post'}
+    response_valid = client.post('/posts/new',
+                                 data=content_valid,
+                                 follow_redirects=True)
+    assert response_valid.status_code == 200
+    assert response_valid.request.path == '/posts/2'
+    assert all(content_valid[x] in response_valid.text
+               for x in ['title', 'content'])
 
-# TODO; test delete post
+    # Can't add post without title (ignore redirect for post result)
+    no_title = {'csrf_token': flask.g.csrf_token, 'content': 'fluff'}
+    response_no_title = client.post('/posts/new', data=no_title)
+    assert response_no_title.status_code == 400
+
+    # Can't add post without content (ignore redirect for post result)
+    no_content = {'csrf_token': flask.g.csrf_token, 'title': 'stuff'}
+    response_no_content = client.post('/posts/new', data=no_content)
+    assert response_no_content.status_code == 400
+
+    # Can't add post without token
+    response_no_token = client.post('/posts/new', data={'title': 'nope',
+                                                        'content':'negative'})
+    assert response_no_token.status_code == 400
+
+    # Can't post while logged out; redirects to login
+    client.get('/logout') # do NOT move
+    content_no_login = {'csrf_token': flask.g.csrf_token,
+                        'title': 'the show',
+                        'content': 'fif'}
+    response_no_login = client.post('/posts/new', data=content_no_login)
+    assert response_no_login.status_code == 302
+    assert response_no_login.location[:6] == '/login' # some params are appended
+
+    # confirm post was not pushed despite redirect
+    all_posts = client.get('/posts/')
+    assert all(x not in all_posts.text for x in ['the show', 'fif'])
+
+def test_edit_post(client:testing.FlaskClient) -> None:
+    # Setup - login
+    client.get('/login') # creates CSRF token - do NOT move
+    login_data = {'csrf_token': flask.g.csrf_token,
+                  'user_email': user0['email'],
+                  'password': user0['password']}
+    client.post('/login', data=login_data) #pylint: disable=duplicate-code
+
+     # Post is edited successfully - user 0 owns all posts
+    data_valid = {'csrf_token': flask.g.csrf_token,
+                  'title': 'updated title',
+                  'content': 'updated content'}
+    response_valid = client.post('/posts/1/edit',
+                                 data=data_valid,
+                                 follow_redirects=True)
+    assert response_valid.status_code == 200
+    assert response_valid.request.path == '/posts/1'
+    assert all(x in response_valid.text
+               for x in ['updated title', 'updated content'])
+
+    # Can update with no title - will default to previous title
+    no_title = {'csrf_token': flask.g.csrf_token, 'content': 'fluff'}
+    response_no_title = client.post('/posts/1/edit',
+                                    data=no_title,
+                                    follow_redirects=True)
+    assert response_valid.status_code == 200
+    assert response_valid.request.path == '/posts/1'
+    assert 'updated content' not in response_no_title.text # from previous edit
+    assert all(x in response_no_title.text for x in ['fluff', 'updated title'])
+
+    # Can update with no content - will default to previous content
+    no_content = {'csrf_token': flask.g.csrf_token, 'title': 'stuff'}
+    response_no_content = client.post('/posts/1/edit',
+                                      data=no_content,
+                                      follow_redirects=True)
+    assert response_valid.status_code == 200
+    assert response_valid.request.path == '/posts/1'
+    assert 'updated title' not in response_no_content.text # from previous edit
+    assert all(x in response_no_content.text for x in ['fluff', 'stuff'])
+
+    # Can't edit without token
+    response_no_token = client.post('/posts/1/edit', data={'title': 'nope',
+                                                           'content':'iie'})
+    assert response_no_token.status_code == 400
+
+    # Can't edit post while logged out; redirects to login
+    client.get('/logout') # do NOT move
+    post_no_login = {'csrf_token': flask.g.csrf_token,
+                     'title': '24',
+                     'content': '25'}
+    response_no_login = client.post('/posts/1/edit', data=post_no_login)
+    assert response_no_login.status_code == 302
+    assert response_no_login.location[:6] == '/login' # some params are appended
+
+    # confirm post was not edited despite redirect
+    all_comments = client.get('/posts/')
+    assert all(x not in all_comments.text for x in ['24', '25'])
+
+    # Can't edit comment while logged in as another user
+    login_data = {'csrf_token': flask.g.csrf_token,
+                                'user_email': user1['email'],
+                                'password': user1['password']}
+    client.post('/login', data=login_data)
+    response_wrong_user = client.post('/posts/1/edit')
+    assert response_wrong_user.status_code == 403
+
+# def test_delete_post(client:testing.FlaskClient) -> None:
+#     pass
 
 def test_tags(client:testing.FlaskClient) -> None:
     # Page loads with all info
