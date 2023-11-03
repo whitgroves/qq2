@@ -1,18 +1,18 @@
-name: Pytest
+name: Run Tests
 
-run-name: test -- ${{ github.ref_name }} / ${{ github.sha }}
+run-name: Tests -- ${{ github.sha }}
 
 on:
   push:
     branches:
-      - test
+      - 'feature/**'
 
 jobs:
   test:
-    name: Testing
+    name: Tests
     runs-on: ubuntu-latest
     environment: test
-    
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -25,5 +25,21 @@ jobs:
       - name: Install Dependencies
         run: pip install -r requirements.txt
 
-      - name: Test App
+      - name: Pytest
         run: pytest
+
+      - name: Pylint (App)
+        run: pylint app/*
+
+      - name: Pylint (Tests)
+        run: pylint tests/*
+
+      # https://stackoverflow.com/a/73340290/3178898
+      # https://github.com/cli/cli/discussions/5792#discussioncomment-3993375
+      - name: Create Pull Request
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_BODY: Created by GitHub action (run-tests.yml).
+          PR_NAME: Merge ${{ github.ref_name }} -> main
+        run: gh pr edit ${{ github.ref_name }} -b '${{ env.PR_BODY }}' -t '${{ env.PR_NAME }}' && gh pr reopen ${{ github.ref_name }} || gh pr create -B main -H ${{ github.ref_name }} -t '${{ env.PR_NAME }}' -b '${{ env.PR_BODY }}'
+        #run: gh pr view ${{ github.ref_name }} && gh pr reopen ${{ github.ref_name }} || gh pr create -B main -H ${{ github.ref_name }} -t '${{ env.PR_NAME }}' -b '${{ env.PR_BODY }}' # --fill
