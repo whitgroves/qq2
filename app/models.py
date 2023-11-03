@@ -85,7 +85,7 @@ class Tag(ext.db.Model): # pylint: disable=too-few-public-methods
     name = alq.Column(alq.String(50), nullable=False, unique=True)
 
     def __repr__(self):
-        return f'<Tag {self:id}: "{self.name}">'
+        return f'{self.name}'
 
 class Comment(ext.db.Model): # pylint: disable=too-few-public-methods
     """Database model for post comments.

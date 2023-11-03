@@ -5,7 +5,7 @@
     <h1>{% block title %} 🤔 {% endblock %} Edit Post</h1>
     <hr>
     {% if current_user.is_authenticated %}
-        {{ display_post_form(form, false) }}
+        {{ display_post_form(form, post) }}
     {% else %}
         <p>
             Please <a href="{{ url_for('auth.login') }}">login</a> to edit this post.

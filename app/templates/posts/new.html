@@ -5,7 +5,7 @@
     <h1>{% block title %} 📢 {% endblock %} New Post</h1>
     <hr>
     {% if current_user.is_authenticated %}
-        {{ display_post_form(form, true) }}
+        {{ display_post_form(form) }}
     {% else %}
         <p>
             Please <a href="{{ url_for('auth.login') }}">login</a>

@@ -61,17 +61,22 @@
     {% endfor %}
 {% endmacro %}
 
-{% macro display_post_form(form, is_new) %}
+{% macro display_post_form(form, post=None) %}
     <form method="post">
         {{ form.csrf_token }}
-        <h5>{{ form.title.label }}</h5>
-        <p>{{ form.title(size=100) }}</p>
-        <h5>{{ form.content.label}}</h5>
-        <p>{{ form.content(rows=9, cols=100) }}</p>
-        <h5>{{ form.tags.label}}</h5>
-        <p>{{ form.tags(size=100) }}</p>
-        {% set submit_text = 'Create' if is_new else 'Update' %}
-        {% set btn_class = 'success' if is_new else 'primary'%}
+
+        <h5>{{ form.title.label(class='form-label') }}</h5>
+        <p>{{ form.title(class='form-control', size=100, value=(post.title if post else '')) }}</p>
+
+        {# value=() doesn't work for textarea but we have this solution: https://stackoverflow.com/a/53126855/3178898 #}
+        <h5>{{ form.content.label(class='form-label') }}</h5>
+        <p><textarea class='form-control' id='PostForm-content' name='PostForm-content'>{{ post.content if post else ''}}</textarea></p>
+
+        <h5>{{ form.tags.label(class='form-label') }}</h5>
+        <p>{{ form.tags(class='form-control', size=100, value=(post.tags|join(', ') if post else '')) }}</p>
+
+        {% set submit_text = 'Update' if post else 'Create' %}
+        {% set btn_class = 'primary' if post else 'success' %}
         <p><button type="submit" class="btn btn-{{ btn_class }}">{{ submit_text }} Post</button></p>
     </form>
 {% endmacro %}
