@@ -5,11 +5,8 @@ __*__/
 # github actions
 !.github/
 
-# local db's
+# local data
 *.db
 
-# hidden files
-.*
-
-# dockerfile
-!.dockerfile
+# local envs
+*.env

@@ -1,12 +1,6 @@
-# hidden folders
+# hidden folders 
 __*__/
 .*/
 
-# db files
+# local data
 *.db
-
-# hidden files
-.*
-
-# container environment
-!.env

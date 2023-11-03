@@ -4,6 +4,7 @@ log_cli_level = 'INFO'
 
 # based on https://google.github.io/styleguide/pyguide.html#21-lint
 [tool.pylint.main]
+fail-under=9.9 # 1-2 trailing whitespaces can wait
 ignore-patterns = []
 jobs = 0 # 0 -> use all available processors
 persistent = false
