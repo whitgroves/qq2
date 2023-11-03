@@ -5,7 +5,6 @@ run-name: test -- ${{ github.ref_name }} / ${{ github.sha }}
 on:
   push:
     branches:
-      - test
       - 'feature/**'
 
 jobs:
@@ -38,3 +37,5 @@ jobs:
       # https://stackoverflow.com/a/73340290/3178898
       - name: Create Pull Request
         run: gh pr create -B main -H ${{ github.ref_name }} -t 'Merge ${{ github.ref_name }} into main' -b 'Created by GitHub action'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
