@@ -43,9 +43,10 @@ def test_edit(client:testing.FlaskClient) -> None:
                                       data=update_data_valid,
                                       follow_redirects=True)
     assert response_post_valid.status_code == 200
-    assert response_post_valid.request.path == '/users/1/edit'
-    response_post_valid_confirm = client.get('/users/1')
-    assert bio in response_post_valid_confirm.text
+    assert response_post_valid.request.path == '/users/1'
+
+    # Confirm user is redirected to profile after edit
+    assert bio in response_post_valid.text
 
     # Cannot update without CSRF token
     update_data_no_token = {'bio': "That boy ain't right.", **user0}
