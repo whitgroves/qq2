@@ -51,7 +51,7 @@ def edit_user(id_:int) -> flask.Response:
                 ext.db.session.add(user)
                 ext.db.session.commit()
                 flask.flash(f'User {username} updated successfully.')
-                return flask.redirect(flask.url_for('users.edit_user',
+                return flask.redirect(flask.url_for('users.get_user',
                                                     id_=user.id))
             return flask.render_template('users/edit.html',
                                          user=user,

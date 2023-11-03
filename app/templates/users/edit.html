@@ -5,12 +5,17 @@
     <hr>
     <form method="post">
         {{ form.csrf_token }}
-        <h5>{{ form.email.label }}</h5>
-        <p>{{ form.email(size=80) }}</p>
-        <h5>{{ form.username.label }}</h5>
-        <p>{{ form.username(size=80) }}</p>
-        <h5>{{ form.bio.label }}</h5>
-        <p>{{ form.bio(rows=15, cols=60) }}</p>
+
+        <h5>{{ form.email.label(class='form-label') }}</h5>
+        <p>{{ form.email(class='form-control', size=80, value=user.email) }}</p>
+
+        <h5>{{ form.username.label(class='form-label') }}</h5>
+        <p>{{ form.username(class='form-control', size=80, value=user.username) }}</p>
+
+        <h5>{{ form.bio.label(class='form-label') }}</h5>
+        <p><textarea class='form-control' id='bio' name='bio'>{{ user.bio }}</textarea></p>
+        {# ^ https://stackoverflow.com/a/53126855/3178898 #}
+
         <p><button type="submit" class="btn btn-primary">Update Account</button></p>
     </form>
     <hr>

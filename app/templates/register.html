@@ -5,19 +5,22 @@
     <hr>
     <form method="post">
         {{ form.csrf_token }}
+
         <div class="mb-3" >
-            <h5>{{ form.email.label }}</h5>
-            <p>{{ form.email(size=100) }}</p>
+            <h5>{{ form.email.label(class='form-label') }}</h5>
+            <p>{{ form.email(class='form-control', size=100) }}</p>
         </div>
+
         <div class="mb-3">
-            <h5>{{ form.password.label }}</h5>
-            <p>{{ form.password(size=100) }}</p>
+            <h5>{{ form.password.label(class='form-label') }}</h5>
+            <p>{{ form.password(class='form-control', size=100) }}</p>
         </div>
+
         <div class="mb-3">
-            <h5>{{ form.username.label }}</h5>
-            <p>{{ form.username(size=100) }}</p>
+            <h5>{{ form.username.label(class='form-label') }}</h5>
+            <p>{{ form.username(class='form-control', size=100) }}</p>
         </div>
-        <br>
+        
         <button type="submit" class="btn btn-success">Sign Up</button>
     </form>
 {% endblock %}

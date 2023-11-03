@@ -43,7 +43,7 @@
             <form method="post" action="{{ url_for('posts.add_comment', id_=post.id) }}">
                 {{ form.csrf_token }}
                 <div class="card-body">
-                    {{ form.content(rows=5, cols=60) }}
+                    {{ form.content(class='form-control') }}
                 </div>
                 <div class="card-footer">
                     <button type="submit" class="btn btn-success">Reply to Post</button>

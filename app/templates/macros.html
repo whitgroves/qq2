@@ -68,9 +68,9 @@
         <h5>{{ form.title.label(class='form-label') }}</h5>
         <p>{{ form.title(class='form-control', size=100, value=(post.title if post else '')) }}</p>
 
-        {# value=() doesn't work for textarea but we have this solution: https://stackoverflow.com/a/53126855/3178898 #}
         <h5>{{ form.content.label(class='form-label') }}</h5>
-        <p><textarea class='form-control' id='PostForm-content' name='PostForm-content'>{{ post.content if post else ''}}</textarea></p>
+        <p><textarea class='form-control' id='content' name='content'>{{ post.content if post else ''}}</textarea></p>
+        {# ^ https://stackoverflow.com/a/53126855/3178898 #}
 
         <h5>{{ form.tags.label(class='form-label') }}</h5>
         <p>{{ form.tags(class='form-control', size=100, value=(post.tags|join(', ') if post else '')) }}</p>
