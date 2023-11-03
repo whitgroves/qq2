@@ -82,7 +82,7 @@ class Tag(ext.db.Model): # pylint: disable=too-few-public-methods
         (post_tag) posts: A list of all posts with this tag (M:N).
     """
     id = alq.Column(alq.Integer, primary_key=True)
-    name = alq.Column(alq.String(50), nullable=False)
+    name = alq.Column(alq.String(50), nullable=False, unique=True)
 
     def __repr__(self):
         return f'<Tag {self:id}: "{self.name}">'

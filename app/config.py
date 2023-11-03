@@ -23,10 +23,10 @@ class BaseConfig: # pylint: disable=too-few-public-methods
     SQLALCHEMY_DATABASE_URI.
 
     Attributes:
-    SECRET_KEY: The app's secret key. Used mainly to generate CSRF tokens.
-    SQLALCHEMY_DATABASE_URI: Connection string for the app's database.
-    SQLALCHEMY_TRACK_MODIFICATIONS: Whether to track db modifications.
-    TESTING: Whether the app is in testing mode.
+        SECRET_KEY: The app's secret key. Used mainly to generate CSRF tokens.
+        SQLALCHEMY_DATABASE_URI: Connection string for the app's database.
+        SQLALCHEMY_TRACK_MODIFICATIONS: Whether to track db modifications.
+        TESTING: Whether the app is in testing mode.
     """
     SECRET_KEY = ''
     SQLALCHEMY_DATABASE_URI = ''

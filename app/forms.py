@@ -19,32 +19,28 @@ def input_required(max_len:int=None) -> list:
 
 # users/id/edit
 class UserForm(flask_wtf.FlaskForm):
-    """Update form for user information."""
     email = wtforms.EmailField('Email', validators=input_required(80))
     username = wtforms.StringField('Username', validators=input_required(100))
     bio = wtforms.TextAreaField('Bio')
 
 # posts/new (post)
 class PostForm(flask_wtf.FlaskForm):
-    """Post form."""
     title = wtforms.StringField('Title', validators=input_required(100))
     content = wtforms.TextAreaField('Content', validators=input_required())
+    tags = wtforms.StringField('Tags (separated by comma)')
 
 # posts/id (comment)
 class CommentForm(flask_wtf.FlaskForm):
-    """Comment form."""
     content = wtforms.TextAreaField('Comment', validators=input_required())
 
 # register
 class RegisterForm(flask_wtf.FlaskForm):
-    """Registration form for new users."""
     email = wtforms.EmailField('Email', validators=input_required(80))
     password = wtforms.PasswordField('Password', validators=input_required(100))
     username = wtforms.StringField('Username', validators=input_required(100))
 
 # login
 class LoginForm(flask_wtf.FlaskForm):
-    """Login form for returning users."""
     user_email = wtforms.StringField('Username or Email',
                                      validators=input_required())
     password = wtforms.PasswordField('Password', validators=input_required())

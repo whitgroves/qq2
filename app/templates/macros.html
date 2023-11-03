@@ -60,3 +60,18 @@
         </div>
     {% endfor %}
 {% endmacro %}
+
+{% macro display_post_form(form, is_new) %}
+    <form method="post">
+        {{ form.csrf_token }}
+        <h5>{{ form.title.label }}</h5>
+        <p>{{ form.title(size=100) }}</p>
+        <h5>{{ form.content.label}}</h5>
+        <p>{{ form.content(rows=9, cols=100) }}</p>
+        <h5>{{ form.tags.label}}</h5>
+        <p>{{ form.tags(size=100) }}</p>
+        {% set submit_text = 'Create' if is_new else 'Update' %}
+        {% set btn_class = 'success' if is_new else 'primary'%}
+        <p><button type="submit" class="btn btn-{{ btn_class }}">{{ submit_text }} Post</button></p>
+    </form>
+{% endmacro %}
