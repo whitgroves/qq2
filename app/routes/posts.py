@@ -23,6 +23,28 @@ def get_post(id_:int) -> flask.Response:
     form = forms.CommentForm()
     return flask.render_template('posts/post.html', post=post, form=form)
 
+# CHALLENGE: turn this into a generator function
+def process_tags(tagstr:str) -> list[models.Tag] | None:
+    """Converts a string of comma-separated tags into a list of db objects.
+
+    Args:
+        tagstr: A single string of comma-separated tags.
+
+    Returns:
+        A list of models.Tag objects, with their respective names set to each
+        comma-separated value in the tag, or None if <tagstr> is invalid. Note
+        that an empty string will also return None.
+    """
+    if not tagstr or len(tagstr) == 0: return None
+    tags = []
+    for t in tagstr.split(','):
+        name = t.strip()
+        tag = models.Tag.query.filter(
+                models.Tag.name.ilike(name)).first() or \
+                models.Tag(name=name)
+        tags.append(tag)
+    return tags
+
 @bp.route('/new', methods=('GET', 'POST'))
 @fl.login_required
 def new_post() -> flask.Response:
@@ -34,8 +56,7 @@ def new_post() -> flask.Response:
         case 'POST':
             title = form.title.data
             content = form.content.data
-            tags = [models.Tag(name='TODO'),
-                    models.Tag(name='NotImplementedException')]
+            tags = process_tags(form.tags.data)
             errors = False
             if not title or not content:
                 flask.flash('Post title and content required.')
@@ -51,8 +72,8 @@ def new_post() -> flask.Response:
                                                     id_=post.id))
             return flask.render_template('posts/new.html', form=form), 400
         case _:
-            flask.current_app.logger.warn(
-                f'405: /posts/new: {flask.request.method}: {flask.request}')
+            flask.current_app.logger.warning(
+                f'/posts/new: {flask.request.method}: {flask.request}')
             flask.abort(405)
 
 @bp.route('/<int:id_>/edit', methods=('GET', 'POST'))
@@ -74,7 +95,7 @@ def edit_post(id_:int) -> flask.Response:
             if form.validate_on_submit():
                 post.title = form.title.data or post.title
                 post.content = form.content.data or post.content
-                # post.tags = form.tags.data
+                post.tags = process_tags(form.tags.data) or post.tags
                 ext.db.session.add(post)
                 ext.db.session.commit()
                 return flask.redirect(flask.url_for('posts.get_post',
@@ -83,11 +104,11 @@ def edit_post(id_:int) -> flask.Response:
                                          post=post,
                                          form=form), 400
         case _:
-            flask.current_app.logger.warn(
-                f'405: /posts/new: {flask.request.method}: {flask.request}')
+            flask.current_app.logger.warning(
+                f'/posts/new: {flask.request.method}: {flask.request}')
             flask.abort(405)
 
-@bp.post('/<int:id_>/delete/')
+@bp.post('/<int:id_>/delete')
 @fl.login_required
 def delete_post(id_:int) -> flask.Response:
     """Deletes the post specified by <id_> and its associated comments."""
@@ -116,7 +137,7 @@ def get_comments() -> flask.Response:
     comments = models.Comment.query.all()
     return flask.render_template('posts/comments.html', comments=comments)
 
-@bp.post('/<int:id_>/comments/add/')
+@bp.post('/<int:id_>/comments/add')
 @fl.login_required
 def add_comment(id_:int) -> flask.Response:
     """Adds a comment to the post specified by <id_>."""
@@ -138,7 +159,7 @@ def add_comment(id_:int) -> flask.Response:
     return flask.redirect(flask.url_for('posts.get_post', id_=post.id),
                           code=code)
 
-@bp.post('/comments/<int:id_>/delete/')
+@bp.post('/comments/<int:id_>/delete')
 @fl.login_required
 def delete_comment(id_:int) -> flask.Response:
     """Deletes the comment specified by <id_>."""

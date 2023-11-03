@@ -42,4 +42,3 @@ jobs:
           PR_BODY: Created by GitHub action (run-tests.yml).
           PR_NAME: Merge ${{ github.ref_name }} -> main
         run: gh pr edit ${{ github.ref_name }} -b '${{ env.PR_BODY }}' -t '${{ env.PR_NAME }}' && gh pr reopen ${{ github.ref_name }} || gh pr create -B main -H ${{ github.ref_name }} -t '${{ env.PR_NAME }}' -b '${{ env.PR_BODY }}'
-        #run: gh pr view ${{ github.ref_name }} && gh pr reopen ${{ github.ref_name }} || gh pr create -B main -H ${{ github.ref_name }} -t '${{ env.PR_NAME }}' -b '${{ env.PR_BODY }}' # --fill

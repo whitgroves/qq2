@@ -8,16 +8,16 @@ from app import models
 from app import config as cfg
 from app import extensions as ext
 
-# user1_data = dict(email='user1@test.net', username='test1', password='test1')
-# user2_data = dict(email='user2@test.net', username='test2', password='test2')
-
+# initialized outside of the app fixture so the other test modules can access.
+# it's not "best practice" to do this, but it makes writing tests much easier.
 user_data = [{'email':f'user{i}@test.net',
               'username':f'user{i}',
               'password':f'test{i}'} for i in range(2)]
-
 post_data = [{'title': f'Underwater Basket Weaving {i+1}01',
-              'content': f'Step {i+1}: I put on my robe and wizard hat 🧙‍♂️'} 
+              'content': f'Step {i}: I put on my robe and wizard hat 🧙‍♂️'} 
               for i in range(2)]
+comment_data = ['first', 'second']
+tag_data = [f'tag{i}' for i in range(1)]
 
 @pytest.fixture()
 def app() -> flask.Flask:
@@ -41,14 +41,14 @@ def app() -> flask.Flask:
         test_comments = [models.Comment(content=x,
                                         post=test_posts[0],
                                         user=test_users[0])
-                                        for x in ['first', 'second']]
-        test_tag = models.Tag(name='depricated')
-        test_posts[0].tags.append(test_tag)
+                                        for x in comment_data]
+        test_tags = [models.Tag(name=t) for t in tag_data]
+        test_posts[0].tags.extend(test_tags)
 
         ext.db.session.add_all(test_users)
         ext.db.session.add_all(test_posts)
         ext.db.session.add_all(test_comments)
-        ext.db.session.add(test_tag)
+        ext.db.session.add_all(test_tags)
         ext.db.session.commit()
 
         # yielded in app context so downstream fixtures/tests have access to it

@@ -1,22 +1,14 @@
-{% from 'macros.html' import display_tags %}
+{% from 'macros.html' import display_post_form %}
 {% extends 'base.html' %}
 
 {% block content %}
     <h1>{% block title %} 🤔 {% endblock %} Edit Post</h1>
     <hr>
     {% if current_user.is_authenticated %}
-        <form method="post">
-            {{ form.csrf_token }}
-            <h5>{{ form.title.label }}</h5>
-            <p>{{ form.title(size=100) }}</p>
-            <h5>{{ form.content.label}}</h5>
-            <p>{{ form.content(rows=15, cols=60) }}</p>
-            <p><button type="submit" class="btn btn-primary">Update Post</button></p>
-        </form>
+        {{ display_post_form(form, post) }}
     {% else %}
         <p>
-            Please <a href="{{ url_for('auth.login') }}">login</a>
-            or <a href="{{ url_for('auth.register') }}">register</a> to post.
+            Please <a href="{{ url_for('auth.login') }}">login</a> to edit this post.
         </p>
     {% endif %}
 {% endblock %}
