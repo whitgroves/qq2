@@ -6,6 +6,11 @@
     <hr>
     {% if current_user.is_authenticated %}
         {{ display_post_form(form, post) }}
+        <hr>
+        <form method="POST" action="{{ url_for('posts.delete_post', id_=post.id) }}">
+            <button type="submit" class="btn btn-danger"
+                onclick="return confirm('Delete this post (and its comments) forever?')">Delete Post</button>
+        </form>
     {% else %}
         <p>
             Please <a href="{{ url_for('auth.login') }}">login</a> to edit this post.
