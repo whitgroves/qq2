@@ -10,7 +10,6 @@ bp = flask.Blueprint('posts', __name__)
 def index() -> flask.Response:
     """Returns all posts."""
     posts = models.Post.query.all()
-    flask.current_app.logger.debug(fl.current_user)
     return flask.render_template('posts/index.html',
                                  posts=posts,
                                  user=fl.current_user)
@@ -158,6 +157,41 @@ def add_comment(id_:int) -> flask.Response:
         code = 302 # default for redirect()
     return flask.redirect(flask.url_for('posts.get_post', id_=post.id),
                           code=code)
+
+@bp.route('/comments/<int:id_>/edit', methods=('GET', 'POST'))
+@fl.login_required
+def edit_comment(id_:int) -> flask.Response:
+    """Updates the comment specified by <id_>."""
+    comment = ext.db.session.get(models.Comment, id_)
+    if not comment:
+        return flask.redirect(flask.url_for('posts.index'))
+    if not fl.current_user or comment.user_id != fl.current_user.id:
+        flask.abort(403)
+    form = forms.CommentForm()
+    match flask.request.method:
+        case 'GET':
+            return flask.render_template('/posts/edit-comment.html',
+                                         post=comment.post,
+                                         comment=comment,
+                                         form=form)
+        case 'POST':
+            content = form.content.data
+            errors = False
+            code = 400 # catch errors for testing
+            if content is None or len(content) == 0:
+                flask.flash("Can't update with empty comment.")
+                errors = True
+            if not errors and form.validate_on_submit():
+                comment.content = form.content.data.strip()
+                ext.db.session.add(comment)
+                ext.db.session.commit()
+                code = 302 # default for redirect()
+            return flask.redirect(flask.url_for('posts.get_post',
+                                                id_=comment.post.id), code=code)
+        case _:
+            flask.current_app.logger.warning(
+                f'/comments/edit: {flask.request.method}: {flask.request}')
+            flask.abort(405)
 
 @bp.post('/comments/<int:id_>/delete')
 @fl.login_required

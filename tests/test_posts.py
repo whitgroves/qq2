@@ -18,6 +18,9 @@ def login(client:ft.FlaskClient, user_id:int=0) -> None:
     
     Note that the CSRF token is retained in the global app context, which makes
     it available via flask.g.csrf_token after this method is called.
+
+    Also note that this does not get access to pytest fixtures, so <client> must
+    be passed manually.
     """
     client.get('/login')
     login_data = {'csrf_token': flask.g.csrf_token,
@@ -264,10 +267,57 @@ def test_add_comment(client:ft.FlaskClient) -> None:
     all_comments = client.get('/posts/comments/')
     assert content_no_login['content'] not in all_comments.text
 
-# def test_edit_comment(client:ft.FlaskClient) -> None:
-#     # Login to edit comment
-#     login(client=client) # creates CSRF token - do NOT move
-#     pass
+def test_edit_comment(client:ft.FlaskClient) -> None:
+    # Login to edit comment
+    login(client=client) # creates CSRF token - do NOT move
+    token = {'csrf_token': flask.g.csrf_token}
+
+    # internal helper
+    def endpoint(id_:int) -> str:
+        return f'/posts/comments/{id_}/edit'
+
+    # Edit page loads with previous comment value
+    response_get = client.get(endpoint(id_=1))
+    assert comment_data[0] in response_get.text
+
+    # Comment is edited successfully - all comments are on post 0 by user 0
+    data_valid = {'content': 'updated content'}
+    response_valid = client.post(endpoint(id_=1),
+                                 data={**token,**data_valid},
+                                 follow_redirects=True)
+    assert response_valid.status_code == 200
+    assert response_valid.request.path == '/posts/1'
+    assert comment_data[0] not in response_valid.text
+    assert all(x in response_valid.text for x in [data_valid['content'],
+                                                  comment_data[1]])
+
+    # Can't push empty update
+    response_empty = client.post(endpoint(id_=1), data={**token})
+    assert response_empty.status_code == 400
+
+    # Can't edit without token
+    data_invalid = {'content': '42'}
+    response_no_token = client.post(endpoint(id_=1), data=data_invalid)
+    assert response_no_token.status_code == 400
+
+    # Can't edit comment while logged out; redirects to login
+    client.get('/logout') # do NOT move
+    response_no_login = client.post(endpoint(id_=1), data={**token,
+                                                           **data_invalid})
+    assert response_no_login.status_code == 302
+    assert response_no_login.location[:6] == '/login' # some params are appended
+
+    # Confirm comment was not edited despite redirect
+    all_posts = client.get('/posts/1')
+    assert all(x not in all_posts.text for x in list(data_invalid.values()))
+
+    # Can't edit comment while logged in as another user
+    login(client=client, user_id=1)
+    response_wrong_user_get = client.get(endpoint(id_=1))
+    assert response_wrong_user_get.status_code == 403
+    response_wrong_user_post = client.post(endpoint(id_=1),
+                                           data={**token, **data_invalid})
+    assert response_wrong_user_post.status_code == 403
 
 def test_delete_comment(client:ft.FlaskClient) -> None:
     # Login to delete comment

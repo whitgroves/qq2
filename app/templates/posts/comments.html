@@ -1,3 +1,4 @@
+{% from 'macros.html' import display_comment_actions %}
 {% extends 'base.html'%}
 
 {% block content %}
@@ -17,10 +18,7 @@
         </div>
         {% if current_user.is_authenticated and current_user.id == comment.user.id %}
             <div class="card-footer">
-                <form method="POST" action="{{ url_for('posts.delete_comment', id_=comment.id) }}">
-                    <button type="submit" class="btn btn-danger btn-sm"
-                        onclick="return confirm('Delete this comment forever?')">Delete</button>
-                </form>
+                {{ display_comment_actions(comment) }}
             </div>
         {% endif %}
     </div>

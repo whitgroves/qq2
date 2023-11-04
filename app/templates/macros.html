@@ -80,3 +80,40 @@
         <p><button type="submit" class="btn btn-{{ btn_class }}">{{ submit_text }} Post</button></p>
     </form>
 {% endmacro %}
+
+{% macro display_comment_actions(comment) %}
+    <div class="container">
+        <div class="row row-cols-auto">
+            <div class="col">
+                <a href="{{ url_for('posts.edit_comment', id_=comment.id) }}" class="btn btn-warning btn-sm">Edit Comment</a>
+            </div>
+            <div class="col">
+                <form method="post" action="{{ url_for('posts.delete_comment', id_=comment.id) }}">
+                    <button type="submit" class="btn btn-danger btn-sm"
+                        onclick="return confirm('Delete this comment forever?')">Delete Comment</button>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endmacro %}
+
+{% macro display_comment_form(form, post, comment=None) %}
+    {% set url = 'posts.edit_comment' if comment else 'posts.add_comment'%}
+    {% set id_ = comment.id if comment else post.id %}
+    <div class="card" style="margin: 8px 0px">
+        <form method="post" action="{{ url_for(url, id_=id_) }}">
+            {{ form.csrf_token }}
+
+            <div class="card-body">
+                <textarea class='form-control' id='content' name='content'>{{ comment.content if comment else ''}}</textarea>
+                {# ^ https://stackoverflow.com/a/53126855/3178898 #}
+            </div>
+
+            <div class="card-footer">
+                {% set btn_cls = 'primary' if content else 'success' %}
+                {% set btn_txt = 'Update Comment' if comment else 'Reply to Post' %}
+                <button type="submit" class="btn btn-{{ btn_cls }}">{{ btn_txt }}</button>
+            </div>
+        </form>
+    </div>
+{% endmacro %}

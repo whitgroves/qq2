@@ -1,0 +1,8 @@
+{% from 'macros.html' import display_comment_form %}
+{% extends 'base.html'%}
+
+{% block content %}
+    <h1>{% block title %} 🙊 {% endblock %} Edit Comment on {{ post.title }}</h1>
+    <hr>
+    {{ display_comment_form(form, comment.post, comment) }}
+{% endblock %}

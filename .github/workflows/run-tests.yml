@@ -28,11 +28,8 @@ jobs:
       - name: Pytest
         run: pytest
 
-      - name: Pylint (App)
-        run: pylint app/*
-
-      - name: Pylint (Tests)
-        run: pylint tests/*
+      - name: Pylint
+        run: pylint app/* tests/*
 
       # https://stackoverflow.com/a/73340290/3178898
       # https://github.com/cli/cli/discussions/5792#discussioncomment-3993375
