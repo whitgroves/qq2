@@ -1,4 +1,4 @@
-{% from 'macros.html' import display_tags %}
+{% from 'macros.html' import display_tags, display_comment_actions, display_comment_form %}
 {% extends 'base.html' %}
 
 {% block content %}
@@ -27,10 +27,7 @@
             </div>
             {% if current_user.is_authenticated and current_user.id == comment.user.id %}
             <div class="card-footer">
-                <form method="POST" action="{{ url_for('posts.delete_comment', id_=comment.id) }}">
-                    <button type="submit" class="btn btn-danger btn-sm"
-                        onclick="return confirm('Delete this comment forever?')">Delete Comment</button>
-                </form>
+                {{ display_comment_actions(comment) }}
             </div>
         {% endif %}
         </div>
@@ -39,17 +36,7 @@
     {% if current_user.is_authenticated %}
         <hr>
         <h4>Add Comment</h4>
-        <div class="card" style="margin: 8px 0px">
-            <form method="post" action="{{ url_for('posts.add_comment', id_=post.id) }}">
-                {{ form.csrf_token }}
-                <div class="card-body">
-                    {{ form.content(class='form-control') }}
-                </div>
-                <div class="card-footer">
-                    <button type="submit" class="btn btn-success">Reply to Post</button>
-                </div>
-            </form>
-        </div>
+        {{ display_comment_form(form, post) }}
     {% endif %}
     <hr>
     {{ display_tags(post.tags) }}
