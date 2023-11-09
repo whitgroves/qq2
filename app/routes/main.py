@@ -8,7 +8,7 @@ bp = flask.Blueprint('main', __name__)
 def index() -> flask.Response:
     """Returns the homepage."""
     return flask.render_template('index.html',
-                                 utc_dt=datetime.datetime.now(datetime.UTC))
+                                 utc_dt=datetime.datetime.now(datetime.timezone.utc))
 
 @bp.route('/about')
 def about() -> flask.Response:
