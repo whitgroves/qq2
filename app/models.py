@@ -106,4 +106,4 @@ class Comment(ext.db.Model): # pylint: disable=too-few-public-methods
 
     def __repr__(self):
         return f'<Comment {self.id}: "{self.content[:20]}\
-            {'...' if len(self.content) > 20 else ''}">'
+            {"..." if len(self.content) > 20 else ""}">'

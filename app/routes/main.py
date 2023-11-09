@@ -1,5 +1,5 @@
 """The main set of routes for qq2."""
-import datetime
+import datetime as dt
 import flask
 
 bp = flask.Blueprint('main', __name__)
@@ -8,7 +8,7 @@ bp = flask.Blueprint('main', __name__)
 def index() -> flask.Response:
     """Returns the homepage."""
     return flask.render_template('index.html',
-                                 utc_dt=datetime.datetime.now(datetime.UTC))
+                                 utc_dt=dt.datetime.now(dt.timezone.utc))
 
 @bp.route('/about')
 def about() -> flask.Response:
