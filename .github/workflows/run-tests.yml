@@ -9,7 +9,7 @@ on:
 
 jobs:
   test:
-    name: Tests
+    name: Test
     runs-on: ubuntu-latest
     environment: test
 
@@ -32,8 +32,36 @@ jobs:
       - name: Pytest
         run: pytest
 
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    environment: test
+    needs: test
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.12"
+
+      - name: Install Dependencies
+        run: pip install -r requirements.txt
+
       - name: Pylint
         run: pylint app/* tests/*
+
+  pull-request:
+    name: Create PR
+    runs-on: ubuntu-latest
+    environment: test
+    needs: [test, lint]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
       # https://stackoverflow.com/a/73340290/3178898
       # https://github.com/cli/cli/discussions/5792#discussioncomment-3993375
